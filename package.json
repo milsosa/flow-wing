@@ -1,0 +1,33 @@
+{
+  "name": "flow",
+  "version": "0.1.0",
+  "description": "An async execution flow library with support for context sharing",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "build": "babel index.js test.js lib --out-dir dist"
+  },
+  "keywords": [
+    "async",
+    "flow",
+    "context"
+  ],
+  "author": "Milton Sosa <sosamilton19@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.16.1",
+    "bluebird": "^3.5.0",
+    "debug": "~2.6.3",
+    "is-promise": "^2.1.0",
+    "lodash.defaults": "^4.2.0",
+    "lodash.foreach": "^4.5.0",
+    "lodash.isfunction": "^3.0.8",
+    "lodash.isplainobject": "^4.0.6",
+    "lodash.map": "^4.6.0",
+    "lodash.partial": "^4.2.1",
+    "verror": "^1.10.0"
+  },
+  "devDependencies": {
+    "jest": "^19.0.2"
+  }
+}
