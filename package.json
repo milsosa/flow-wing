@@ -1,15 +1,17 @@
 {
-  "name": "flow",
+  "name": "siplow",
   "version": "0.1.0",
-  "description": "An async execution flow library with support for context sharing",
+  "description": "A Simple, Pipeable Flows library with support for runtime shared context",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "build": "babel index.js test.js lib --out-dir dist"
+    "test": "mocha"
   },
   "keywords": [
     "async",
+    "task",
+    "control",
     "flow",
+    "shared",
     "context"
   ],
   "author": "Milton Sosa <sosamilton19@gmail.com>",
