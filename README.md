@@ -93,6 +93,9 @@ numbersParallelFlow.run(context)
     console.error(err.cause());
   });
 ```
+## Examples
+
+Take a look at the examples [here](examples).
 
 ## API
 
