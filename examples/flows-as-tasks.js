@@ -5,7 +5,9 @@ const flow = require('../index');
 const tapLog = require('./utils/tap-log');
 
 const options = {
-  resultsAsArray: true
+  resultsAsArray: true,
+  abortOnError: false,
+  concurrency: 3
 };
 
 const getOptions = (opts, name) => Object.assign({}, opts, { name });
@@ -13,7 +15,13 @@ const getOptions = (opts, name) => Object.assign({}, opts, { name });
 const delayed = number => (ctx, previousResult, cb) => {
   cb = cb ? cb : previousResult;
   const delay = number * ctx.delay;
-  setTimeout(() => cb(null, number), delay);
+  setTimeout(() => {
+    if (number === 3 || number === 8) {
+      cb(new Error('something went wrong with task ' + number));
+    } else {
+      cb(null, number);
+    }
+  }, delay);
 };
 
 const oneToFive = flow.parallel({
@@ -44,9 +52,10 @@ const addTotal = flow({
   total(context, numbers) {
     // numbers = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15]]
     return numbers.reduce((acc, item) => acc.concat(item), [])
+      .filter(number => !!number)
       .reduce((sum, number) => sum + number, 0);
   }
-});
+}, { name: 'addTotal' });
 
 const tasks = {
   oneToFive: oneToFive.asTask().pipe(tapLog('oneToFive')),
@@ -59,7 +68,7 @@ const context = {
   delay: parseInt(process.argv[2], 10) || 100
 };
 
-flow.parallel(tasks, options)
+flow.parallel(tasks, getOptions(options, 'mainFlow'))
   .pipe(addTotal)
   .run(context)
   .then(data => {

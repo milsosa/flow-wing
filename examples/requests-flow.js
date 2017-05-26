@@ -37,7 +37,7 @@ const getUsersPosts = (ctx, users) => {
       // .pipe(tapLog(`${user.username}: posts' titles`));
   });
 
-  return flow.parallel(getPostsTasks, { name: 'posts', concurrency: getPostsTasks.length })
+  return flow.parallel(getPostsTasks, { name: 'posts', concurrency: getPostsTasks.length, resultsAsArray: false })
     .run(ctx)
     .then(data => {
       console.timeEnd('get posts run time');
@@ -45,14 +45,16 @@ const getUsersPosts = (ctx, users) => {
     });
 };
 
-const usersFlow = flow({ getUsers }, { name: 'users' });
+const usersFlow = flow({ getUsers }, { name: 'users', resultsAsArray: true });
 
 console.time('get users run time');
 usersFlow.run(context)
   .then(data => {
     console.timeEnd('get users run time');
 
-    return getUsersPosts(data.context, data.results.users);
+    console.log(data.results);
+
+    return getUsersPosts(data.context, data.results[0]);
   })
   .then(data => console.log(data))
   .catch(err => {
