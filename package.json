@@ -53,7 +53,16 @@
       "object-curly-spacing": [
         "error",
         "always"
-      ]
-    }
+      ],
+      "capitalized-comments": 0
+    },
+    "overrides": [
+      {
+        "files": "examples/**/*.js",
+        "rules": {
+          "no-unused-vars": 1
+        }
+      }
+    ]
   }
 }

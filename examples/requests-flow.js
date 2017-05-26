@@ -2,8 +2,8 @@
 
 const VError = require('verror');
 const axios = require('axios');
-const tapLog = require('./utils/tap-log');
 const flow = require('../index');
+const tapLog = require('./utils/tap-log');
 
 const Task = flow.Task;
 const context = {

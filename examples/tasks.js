@@ -39,7 +39,7 @@ const tasksElevenToFifteen = [11, 12, 13, 14, 15].map(number => {
 const tasks = tasksOneToFive.concat(tasksSixToTen).concat(tasksElevenToFifteen);
 
 const numbersSeriesFlow = flow(tasks, { name: 'multiplier' });
-const numbersParallelFlow = flow.parallel(tasks, {name: 'multiplier', concurrency: 5 });
+const numbersParallelFlow = flow.parallel(tasks, { name: 'multiplier', concurrency: 5 });
 
 console.time('serial run time');
 numbersSeriesFlow.run({ multiplier: 2, delay: 500 })

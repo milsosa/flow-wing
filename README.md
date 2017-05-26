@@ -160,14 +160,18 @@ It could be any value and will be defaulted to an empty object `{}` when no valu
 
 ### Data
 
-The object resolved by the promise returned by `someFlow.run(context)`
+The object resolved by the promise returned by `someFlow.run(context)`.
+
+There are some details about the resulting `data` object and are as follow:
+
+- `data.results` - Its value will vary depending on the flow running mode
 
 ```js
-const data = {
+{
   context: Context,
-  results: Array<any> | Object{ string: any, ... },
-  errors: Array<TaskError> // Returned only when Options.abortOnError = false
-};
+  results: Array<*> | Object{ string: *, ... } | *,
+  errors: Array<TaskError>
+}
 ```
 
 ### TaskError
@@ -294,3 +298,8 @@ Un-pipes the provided `Flow` or all ones if not provided from the current one an
 ```js
 someFlow.unpipe(someOtherFlow).run(Context) -> Promise<Data>
 ```
+
+## Run modes
+
+
+## Error Handling

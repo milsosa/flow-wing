@@ -16,11 +16,11 @@ const delayed = number => (ctx, previousResult, cb) => {
   cb = cb ? cb : previousResult;
   const delay = number * ctx.delay;
   setTimeout(() => {
-    if (number === 3 || number === 8) {
-      cb(new Error('something went wrong with task ' + number));
-    } else {
-      cb(null, number);
-    }
+    // if (number === 3 || number === 8) {
+    //   return cb(new Error('something went wrong with task ' + number));
+    // }
+
+    cb(null, number);
   }, delay);
 };
 
@@ -52,7 +52,7 @@ const addTotal = flow({
   total(context, numbers) {
     // numbers = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15]]
     return numbers.reduce((acc, item) => acc.concat(item), [])
-      .filter(number => !!number)
+      .filter(number => number !== undefined)
       .reduce((sum, number) => sum + number, 0);
   }
 }, { name: 'addTotal' });
@@ -63,47 +63,22 @@ const tasks = {
   elevenToFifteen: elevenToFifteen.asTask().pipe(tapLog('elevenToFifteen'))
 };
 
-const test = [
-  oneToFive.asTask().pipe(tapLog('oneToFive1')),
-  oneToFive.asTask().pipe(tapLog('oneToFive2')),
-  oneToFive.asTask().pipe(tapLog('oneToFive3')),
-  oneToFive.asTask().pipe(tapLog('oneToFive4')),
-  oneToFive.asTask().pipe(tapLog('oneToFive5'))
-];
-
 const context = {
   some: 'data',
   delay: parseInt(process.argv[2], 10) || 100
 };
 
-// flow.parallel(tasks, getOptions(options, 'mainFlow'))
-//   .pipe(addTotal)
-//   .run(context)
-//   .then(data => {
-//     console.log(data);
-//     // { context: { some: 'data', delay: 100 },
-//     //   results: { total: 120 } }
-//   })
-//   .catch(err => {
-//     // err = TaskError, a VError instance
-//     console.error(VError.fullStack(err));
-//     // The error cause
-//     console.error(err.cause());
-//   });
-
-const testFlow = flow.parallel(test, getOptions(options, 'mainFlow'));
-
-for (let i = 0; i < 5; i++)  {
-  testFlow.run(context)
+flow.parallel(tasks, getOptions(options, 'mainFlow'))
+  .pipe(addTotal)
+  .run(context)
   .then(data => {
-    console.log(`execution %d errors: `, i, data.errors.length);
+    console.log(data);
     // { context: { some: 'data', delay: 100 },
     //   results: { total: 120 } }
   })
   .catch(err => {
     // err = TaskError, a VError instance
-    // console.error(VError.fullStack(err));
+    console.error(VError.fullStack(err));
     // The error cause
-    // console.error(err.cause());
+    console.error(err.cause());
   });
-}
