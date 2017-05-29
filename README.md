@@ -1,8 +1,8 @@
 # Flow-wing
 
-> A Simple, Composable, Pipeable Tasks Flows library
+> A simple library to build complex flows easily, through composed/piped tasks flows
 
-Flow-wing is a flow control library with support for composable, pipeable tasks flows with shared context.
+Flow-wing is a flow control library with support for composable, pipeable tasks flows with shared runtime context.
 
 It is built around two components: `Flow` and `Task`.
 
@@ -144,12 +144,17 @@ The allowed options that determine the flow's runtime (error handling, concurren
 ```js
 // Defaults
 const options = {
-  resultsAsArray: true, // To return the values as array when the tasks were an object
-  abortOnError: true, // Whether abort Flow's execution on error or not
-  concurrency: Infinity, // Parallel execution concurrency, Infinity = no limit
-  name: 'unnamed', // Flow's name, used only for debuggability
+  resultsAsArray: true,
+  abortOnError: true,
+  concurrency: Infinity,
+  name: 'unnamed'
 };
 ```
+
+- `resultsAsArray` - To return the values as array when the passed tasks are an object
+- `abortOnError` - Whether abort Flow's execution on error or not. When false all the occurred errors will be available on the `data.errors` array.
+- `concurrency` - Parallel execution concurrency, Infinity = no limit. For
+- `name` - Flow's name, used only for debuggability
 
 ### Context
 
@@ -176,7 +181,7 @@ There are some details about the resulting `data` object and are as follow:
 
 ### TaskError
 
-Whenever an error happens while running a Flow/Task, it will be wrapped into a
+Whenever an error happens while running a flow's task, it will be wrapped into a
 `TaskError` which is a [VError](https://github.com/joyent/node-verror) instance
 and the following additional information will be added to it.
 
@@ -193,10 +198,11 @@ Error message example:
 
 > 'task "task-id" in flow{flow-name}:series has failed: the main error message goes here'
 
-**Note:**
+The main/cause error could be obtained through the `.cause()` method.
 
-When `options.abortOnError = false` an `errors` array property will be available in the
-resulting `data` object containing all the occurred errors (if any).
+```js
+err.cause(); // returns the main error which was wrapped
+```
 
 ### Task
 
