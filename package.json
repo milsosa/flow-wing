@@ -24,7 +24,9 @@
     "lib"
   ],
   "scripts": {
-    "test": "xo && ava"
+    "pretest": "xo",
+    "test": "nyc ava -v",
+    "test:watch": "ava -v --watch"
   },
   "dependencies": {
     "bluebird": "^3.5.0",
@@ -41,6 +43,7 @@
   "devDependencies": {
     "ava": "^0.19.1",
     "axios": "^0.16.1",
+    "nyc": "^10.3.2",
     "xo": "^0.18.2"
   },
   "engines": {
