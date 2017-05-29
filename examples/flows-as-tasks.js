@@ -2,7 +2,7 @@
 
 const VError = require('verror');
 const flow = require('../index');
-const tapLog = require('./utils/tap-log');
+const Utils = require('./utils');
 
 const options = {
   resultsAsArray: true,
@@ -58,14 +58,14 @@ const addTotal = flow({
 }, { name: 'addTotal' });
 
 const tasks = {
-  oneToFive: oneToFive.asTask().pipe(tapLog('oneToFive')),
-  sixToTen: sixToTen.asTask().pipe(tapLog('sixToTen')),
-  elevenToFifteen: elevenToFifteen.asTask().pipe(tapLog('elevenToFifteen'))
+  oneToFive: oneToFive.asTask().pipe(Utils.tapLog('oneToFive')),
+  sixToTen: sixToTen.asTask().pipe(Utils.tapLog('sixToTen')),
+  elevenToFifteen: elevenToFifteen.asTask().pipe(Utils.tapLog('elevenToFifteen'))
 };
 
 const context = {
   some: 'data',
-  delay: parseInt(process.argv[2], 10) || 100
+  delay: Utils.getDelayFactor()
 };
 
 flow.parallel(tasks, getOptions(options, 'mainFlow'))

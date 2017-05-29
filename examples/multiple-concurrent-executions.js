@@ -2,7 +2,7 @@
 
 const VError = require('verror');
 const flow = require('../index');
-const tapLog = require('./utils/tap-log');
+const Utils = require('./utils');
 
 const options = {
   resultsAsArray: true,
@@ -12,7 +12,7 @@ const options = {
 
 const context = {
   some: 'data',
-  delay: parseInt(process.argv[2], 10) || 100
+  delay: Utils.getDelayFactor()
 };
 
 const getOptions = (opts, name) => Object.assign({}, opts, { name });
@@ -38,20 +38,20 @@ const oneToFive = flow.parallel({
 }, getOptions(options, 'oneToFive'));
 
 const tasks = [
-  oneToFive.asTask().pipe(tapLog('oneToFive1')),
-  oneToFive.asTask().pipe(tapLog('oneToFive2')),
-  oneToFive.asTask().pipe(tapLog('oneToFive3')),
-  oneToFive.asTask().pipe(tapLog('oneToFive4')),
-  oneToFive.asTask().pipe(tapLog('oneToFive5'))
+  oneToFive.asTask().pipe(Utils.tapLog('oneToFive1')),
+  oneToFive.asTask().pipe(Utils.tapLog('oneToFive2')),
+  oneToFive.asTask().pipe(Utils.tapLog('oneToFive3')),
+  oneToFive.asTask().pipe(Utils.tapLog('oneToFive4')),
+  oneToFive.asTask().pipe(Utils.tapLog('oneToFive5'))
 ];
 
-const testFlow = flow.waterfall(tasks, getOptions(options, 'mainFlow'));
+const testFlow = flow.parallel(tasks, getOptions(options, 'mainFlow'));
 
-for (let i = 0; i < 5; i++) {
+for (let i = 1; i <= 5; i++) {
   testFlow.run(context)
   .then(data => {
     console.log(`execution %d finished with %d errors`, i, data.errors.length);
-    console.log('results: ', i, data.results);
+    console.log('execution %d results: ', i, data.results);
   })
   .catch(err => {
     // err = TaskError, a VError instance

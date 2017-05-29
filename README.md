@@ -28,8 +28,8 @@ const delayed = number => ctx =>
 const delayedWithCallback = number => (ctx, previousResult, cb) => {
   // When running in waterfall {previousResult} will be the previous task result
   // or when running in a flow that was piped into the running one as well
-  cb = cb ? cb : previousResult;
-  setTimeout(() => cb(null, number), number * ctx.delay);
+  const callback = cb || previousResult;
+  setTimeout(() => callback(null, number), number * ctx.delay);
 };
 
 const context = { delay: 100 };
@@ -43,56 +43,80 @@ const tasks = {
 };
 
 const numbersSeriesFlow = flow(tasks, { name: 'numbers', resultsAsArray: true });
-const numbersParallelFlow = flow.parallel(tasks, { name: 'numbers' });
+const numbersParallelFlow = flow.parallel(tasks, { name: 'numbers', resultsAsArray: true });
 const numbersWaterfallFlow = flow.waterfall(tasks, { name: 'numbers' });
+
+const multiplyTasks = [
+  numbersParallelFlow.asTask(),
+  (context, numbers) => numbers.concat([6, 7, 8, 9, 10]),
+  (context, numbers) => {
+    const tasks = numbers.map(number => delayed(number * 5));
+    return flow.parallel(tasks)
+      .run({ delay: 50 })
+      .then(data => data.results);
+  }
+];
+
+const multiplyFlow = flow.waterfall(multiplyTasks, { name: 'multiply' });
+
+const errorHandler = (err) => {
+  // err is a TaskError, a VError instance
+  console.error(VError.fullStack(err));
+  // Get err's info
+  console.error(VError.info(err));
+  // The error cause
+  console.error(err.cause());
+};
 
 console.time('series run time');
 numbersSeriesFlow.run(context)
   .then(data => {
     console.timeEnd('series run time');
     console.log(data);
-    // series run time: 1513ms
-    // { context: { delay: 100 }, results: [ 1, 2, 3, 4, 5 ] }
+    // series run time: 1526.753ms
+    // { results: [ 1, 2, 3, 4, 5 ],
+    //   errors: [],
+    //   context: { delay: 100 } }
   })
-  .catch(err => {
-    // err is a TaskError, a VError instance
-    console.error(VError.fullStack(err));
-    // The error cause
-    console.error(err.cause());
-  });
+  .catch(errorHandler);
 
 console.time('waterfall run time');
 numbersWaterfallFlow.run(context)
   .then(data => {
     console.timeEnd('waterfall run time');
     console.log(data);
-    // waterfall run time: 1513ms
-    // { context: { delay: 100 },
-    //   results: { one: 1, two: 2, three: 3, four: 4, five: 5 } }
+    // waterfall run time: 1524.577ms
+    // { results: { one: 1, two: 2, three: 3, four: 4, five: 5 },
+    //   errors: [],
+    //   context: { delay: 100 } }
   })
-  .catch(err => {
-    // err is a TaskError, a VError instance
-    console.error(VError.fullStack(err));
-    // The error cause
-    console.error(err.cause());
-  });
+  .catch(errorHandler);
 
 console.time('parallel run time');
 numbersParallelFlow.run(context)
   .then(data => {
     console.timeEnd('parallel run time');
     console.log(data);
-    // parallel run time: 506ms
-    // { context: { delay: 100 },
-    //   results: { one: 1, two: 2, three: 3, four: 4, five: 5 } }
+    // parallel run time: 511.154ms
+    // { results: [ 1, 2, 3, 4, 5 ],
+    //   errors: [],
+    //   context: { delay: 100 } }
   })
-  .catch(err => {
-    // err is a TaskError, a VError instance
-    console.error(VError.fullStack(err));
-    // The error cause
-    console.error(err.cause());
-  });
+  .catch(errorHandler);
+
+console.time('multiply run time');
+multiplyFlow.run(context)
+  .then(data => {
+    console.timeEnd('multiply run time');
+    console.log(data);
+    // multiply run time: 3022.582ms
+    // { results: [ 5, 10, 15, 20, 25, 30, 35, 40, 45, 50 ],
+    //   errors: [],
+    //   context: { delay: 100 } }
+  })
+  .catch(errorHandler);
 ```
+
 ## Examples
 
 Take a look at the examples [here](examples).
@@ -146,14 +170,14 @@ The allowed options that determine the flow's runtime (error handling, concurren
 const options = {
   resultsAsArray: true,
   abortOnError: true,
-  concurrency: Infinity,
+  concurrency: Infinity, // Infinity = no limit
   name: 'unnamed'
 };
 ```
 
 - `resultsAsArray` - To return the values as array when the passed tasks are an object
-- `abortOnError` - Whether abort Flow's execution on error or not. When false all the occurred errors will be available on the `data.errors` array.
-- `concurrency` - Parallel execution concurrency, Infinity = no limit. For
+- `abortOnError` - Whether abort Flow's execution on error or not. When `false` all the occurred errors will be available on the `data.errors` array.
+- `concurrency` - Flow's execution concurrency.
 - `name` - Flow's name, used only for debuggability
 
 ### Context
@@ -196,9 +220,9 @@ and the following additional information will be added to it.
 
 Error message example:
 
-> 'task "task-id" in flow{flow-name}:series has failed: the main error message goes here'
+> task "task-id" in flow{flow-name}:series has failed: the main error message goes here
 
-The main/cause error could be obtained through the `.cause()` method.
+The main/cause error could be obtained through the `err.cause()` method.
 
 ```js
 err.cause(); // returns the main error which was wrapped
@@ -239,7 +263,14 @@ const Task = {
 
 Tasks factory function
 
-##### run(Context, [value]) -> Promise&lt;Any&gt;
+- `id` _Optional_ - The task's id. When not provided it will be assigned as follow.
+  1. The handler/function's name (if any)
+  2. The corresponding index in the tasks array
+  3. The key in the tasks object
+- `handler` _required (Function)_ - The task's handler. It should have the signature defined above.
+- `...args` _Optional_ - The task's specific additional arguments.
+
+##### run(Context, [value]) -> Promise&lt;any&gt;
 
 The method to run the task's handler(s).
 
@@ -251,6 +282,8 @@ This method adds additional handlers/functions to be executed when the task runs
 
 The previous handler result will be piped to the next piped handler
 and the last one's result will be the final task result.
+
+> Useful for debugging or transforming the task's returning data
 
 ### Flow
 
@@ -307,5 +340,28 @@ someFlow.unpipe(someOtherFlow).run(Context) -> Promise<Data>
 
 ## Run modes
 
+Here is a detail of the difference between the run modes.
 
-## Error Handling
+> All the modes when running with `options.abortOnError = true` will abort its execution
+whenever an error occurs in the current task execution and will not run the pending ones.
+
+> All the modes when running with `options.abortOnError = false` will continue its execution
+and will add the occurred errors to the `data.errors` array and the corresponding results array index
+or object key will be `undefined`.
+
+### series
+
+It executes its tasks in series, so the next task will start running only until the previous one has finished.
+
+### waterfall
+
+It behaves like `series` with the only difference that it pass the previous task result as
+argument to the next one. Take a look at the `pipedValue` argument in the handler signature above.
+
+### parallel
+
+It executes its tasks concurrently based on the `options.concurrency` option.
+
+> For complex/large flows it is your responsibility to control how many tasks are being
+run concurrently so that your application/system don't get blocked/unresponsive.
+It's best suited for I/O-bound tasks and not for CPU-bound/synchronous ones.

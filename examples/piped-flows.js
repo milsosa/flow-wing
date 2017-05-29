@@ -2,7 +2,7 @@
 
 const VError = require('verror');
 const flow = require('../index');
-const prettyPrint = require('./utils/pretty-print');
+const Utils = require('./utils');
 
 const Task = flow.Task;
 
@@ -13,7 +13,7 @@ const options = {
 
 const context = {
   some: 'data',
-  delayFactor: parseInt(process.argv[2], 10) || 100
+  delayFactor: Utils.getDelayFactor()
 };
 
 const flatten = values => values.reduce((acc, value) => acc.concat(value), []);
@@ -38,13 +38,13 @@ const addFlow = flow([
     // Fail task
     // throw new Error('an error happended in the add flow');
 
-    prettyPrint('addFlow input', numbers);
+    Utils.prettyPrint('addFlow input', numbers);
     const tasks = flatten(numbers).map(num => delayed(num + 5));
     return flow.parallel(tasks, options)
       .run(ctx)
       .then(data => {
         ctx.results = { numbers, add: data.results };
-        prettyPrint('addFlow results', data);
+        Utils.prettyPrint('addFlow results', data);
         return data.results;
       });
   })
@@ -52,13 +52,13 @@ const addFlow = flow([
 
 const multiplyFlow = flow([
   Task.create('multiplier', (ctx, numbers) => {
-    prettyPrint('multiplyFlow input', numbers);
+    Utils.prettyPrint('multiplyFlow input', numbers);
     const tasks = flatten(numbers).map(num => delayed(num * 5));
     return flow.parallel(tasks, options)
       .run(ctx)
       .then(data => {
         ctx.results.multiply = data.results;
-        prettyPrint('multiplyFlow results', data);
+        Utils.prettyPrint('multiplyFlow results', data);
         return data.results;
       });
   }),
@@ -70,13 +70,13 @@ const subtractFlow = flow([
     // Uncomment to make task fail
     // throw new Error('an error happended in the subtract flow');
 
-    prettyPrint('subtractFlow input', numbers);
+    Utils.prettyPrint('subtractFlow input', numbers);
     const tasks = flatten(numbers).map(num => delayed(num - 1));
     return flow.parallel(tasks, options)
       .run(ctx)
       .then(data => {
         ctx.results.subtract = data.results;
-        prettyPrint('subtractFlow results', data);
+        Utils.prettyPrint('subtractFlow results', data);
         return data.results;
       });
   })
@@ -89,7 +89,7 @@ numbersFlow
   .pipe(subtractFlow)
   .run(context)
   .then(data => {
-    prettyPrint('piped flows final result', data);
+    Utils.prettyPrint('piped flows final result', data);
   })
   .catch(err => {
     // err = TaskError, a VError instance
@@ -109,7 +109,7 @@ numbersFlow
 // flow.waterfall(tasks, getOptions(options, 'flows-as-tasks'))
 //   .run(context)
 //   .then(data => {
-//     prettyPrint('flows-as-tasks final result', data);
+//     Utils.prettyPrint('flows-as-tasks final result', data);
 //   })
 //   .catch(err => {
 //     // err = TaskError, a VError instance
@@ -133,7 +133,7 @@ numbersFlow
 // ], getOptions(options, 'simple-task-flow'))
 //   .run(context)
 //   .then(data => {
-//     prettyPrint('simple-task-flow final result', data);
+//     Utils.prettyPrint('simple-task-flow final result', data);
 //   })
 //   .catch(err => {
 //     // err = TaskError, a VError instance

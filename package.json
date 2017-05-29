@@ -38,6 +38,8 @@
     "lodash.isplainobject": "^4.0.6",
     "lodash.map": "^4.6.0",
     "lodash.partial": "^4.2.1",
+    "range": "0.0.3",
+    "sinon": "~2.3.2",
     "verror": "^1.10.0"
   },
   "devDependencies": {
@@ -57,7 +59,8 @@
         "error",
         "always"
       ],
-      "capitalized-comments": 0
+      "capitalized-comments": "off",
+      "no-use-extend-native/no-use-extend-native": "off"
     },
     "overrides": [
       {

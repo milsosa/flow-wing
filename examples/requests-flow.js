@@ -3,7 +3,7 @@
 const VError = require('verror');
 const axios = require('axios');
 const flow = require('../index');
-const tapLog = require('./utils/tap-log');
+const Utils = require('./utils');
 
 const Task = flow.Task;
 const context = {
@@ -16,9 +16,9 @@ const getUsers = Task.create('users', ctx => {
   return axios.get(ctx.baseUrl + ctx.usersPath)
     .then(response => response.data);
 })
-// .pipe(tapLog('users list'))
-.pipe((ctx, users) => users.map(user => ({ id: user.id, username: user.username })));
-// .pipe(tapLog('transformed users list'));
+.pipe(Utils.tapLog('users list'))
+.pipe((ctx, users) => users.map(user => ({ id: user.id, username: user.username })))
+.pipe(Utils.tapLog('transformed users list'));
 
 const getPosts = (ctx, userId) => {
   return axios.get(`${ctx.baseUrl + ctx.postsPath}?userId=${userId}`)
@@ -30,11 +30,11 @@ const getUsersPosts = (ctx, users) => {
 
   const getPostsTasks = users.map(user => {
     return Task.create(user.username, getPosts, user.id)
-      // .pipe(tapLog(`${user.username}: posts`))
+      .pipe(Utils.tapLog(`${user.username}: posts`))
       .pipe((ctx, posts) => {
         return posts.map(post => post.title);
-      });
-      // .pipe(tapLog(`${user.username}: posts' titles`));
+      })
+      .pipe(Utils.tapLog(`${user.username}: posts' titles`));
   });
 
   return flow.parallel(getPostsTasks, { name: 'posts', concurrency: getPostsTasks.length, resultsAsArray: false })
@@ -51,12 +51,13 @@ console.time('get users run time');
 usersFlow.run(context)
   .then(data => {
     console.timeEnd('get users run time');
-
-    console.log(data.results);
+    Utils.prettyPrint('users flow results', data.results);
 
     return getUsersPosts(data.context, data.results[0]);
   })
-  .then(data => console.log(data))
+  .then(data => {
+    Utils.prettyPrint('users posts results', data.results);
+  })
   .catch(err => {
     // err = TaskError, a VError instance
     console.error(VError.fullStack(err));

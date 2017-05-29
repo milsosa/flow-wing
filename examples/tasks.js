@@ -1,7 +1,7 @@
 'use strict';
 
 const VError = require('verror');
-const Bluebird = require('bluebird');
+const Promise = require('bluebird');
 const flow = require('../index');
 
 const Task = flow.Task;
@@ -12,12 +12,12 @@ const multiplyOne = (ctx, number, callback) => {
 
 const multiplyTwo = (ctx, number, multiplier, delay) => {
   // Uncomment to make task fail
-  // return Bluebird.reject(new Error(`some weird error multiplying ${number}`));
-  return Bluebird.delay(delay, number * multiplier);
+  // return Promise.reject(new Error(`some weird error multiplying ${number}`));
+  return Promise.delay(delay, number * multiplier);
 };
 
 const multiplyThree = (ctx, number) => {
-  return Bluebird.resolve(number * ctx.multiplier);
+  return Promise.resolve(number * ctx.multiplier);
 };
 
 const tasksOneToFive = [1, 2, 3, 4, 5].map(number => {
