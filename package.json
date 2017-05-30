@@ -46,10 +46,17 @@
     "ava": "^0.19.1",
     "axios": "^0.16.1",
     "nyc": "^10.3.2",
+    "tap-spec": "^4.1.1",
     "xo": "^0.18.2"
   },
   "engines": {
     "node": ">=4"
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ]
   },
   "xo": {
     "space": 2,

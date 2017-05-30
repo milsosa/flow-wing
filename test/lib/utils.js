@@ -1,12 +1,11 @@
 import test from 'ava';
-
-const VError = require('verror');
-const Utils = require('../../lib/utils');
-const flow = require('../../lib/flow');
+import VError from 'verror';
+import flow from '../../lib/flow';
+import Utils from '../../lib/utils';
 
 const Task = flow.Task;
 
-test('.isPromise()', t => {
+test('Utils.isPromise()', t => {
   const promise = Promise.resolve(true);
 
   t.true(Utils.isPromise(promise), 'should return true when passed a promise');
@@ -14,12 +13,12 @@ test('.isPromise()', t => {
   t.false(Utils.isPromise({}), 'should return false when passed an object');
 });
 
-test('.isFunction()', t => {
+test('Utils.isFunction()', t => {
   t.true(Utils.isFunction(() => {}), 'should return true for a function');
   t.false(Utils.isFunction({}), 'should return true for an object');
 });
 
-test('.isTask()', t => {
+test('Utils.isTask()', t => {
   const task = Task.create(() => {});
 
   t.true(Utils.isTask(task), 'should return true for a task');
@@ -27,7 +26,7 @@ test('.isTask()', t => {
   t.false(Utils.isTask({}), 'should return false for an object');
 });
 
-test('.isFlow()', t => {
+test('Utils.isFlow()', t => {
   const task = Task.create(() => {});
   const testFlow = flow([task]);
 
@@ -36,7 +35,7 @@ test('.isFlow()', t => {
   t.false(Utils.isFlow({}), 'should return false for an object');
 });
 
-test('.restArgs()', t => {
+test('Utils.restArgs()', t => {
   const fn = function (skip) {
     return Utils.restArgs(arguments, skip);
   };
@@ -46,7 +45,7 @@ test('.restArgs()', t => {
   t.is(fn(2, 'arg1', 'arg2').length, 1, 'should return an array with the rest of arguments');
 });
 
-test('.buildTaskError()', t => {
+test('Utils.buildTaskError()', t => {
   const cause = new Error('something went wrong');
   const taskID = 'task-id';
   const flowOpts = { name: 'flow-name', mode: 'parallel' };
