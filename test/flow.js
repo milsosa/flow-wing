@@ -130,18 +130,6 @@ test('.waterfall() should return only the last result', async t => {
   t.is(errors.length, 0, 'should return an empty errors array');
 });
 
-test('series', syncAndAsyncFlowTestMacro, flow.series, { from: 1, to: 5 }, range(1, 5));
-test('series', syncAndAsyncFlowTestMacro, flow.series, { from: 1, to: 5, withCallback: true }, range(1, 5));
-test('series', syncAndAsyncFlowTestMacro, flow.series, { from: 1, to: 5, withPromise: true }, range(1, 5));
-
-test('waterfall', syncAndAsyncFlowTestMacro, flow.waterfall, { from: 1, to: 5 }, 5);
-test('waterfall', syncAndAsyncFlowTestMacro, flow.waterfall, { from: 1, to: 5, withCallback: true }, 5);
-test('waterfall', syncAndAsyncFlowTestMacro, flow.waterfall, { from: 1, to: 5, withPromise: true }, 5);
-
-test('parallel', syncAndAsyncFlowTestMacro, flow.parallel, { from: 1, to: 5 }, range(1, 5));
-test('parallel', syncAndAsyncFlowTestMacro, flow.parallel, { from: 1, to: 5, withCallback: true }, range(1, 5));
-test('parallel', syncAndAsyncFlowTestMacro, flow.parallel, { from: 1, to: 5, withPromise: true }, range(1, 5));
-
 test('any flow instance should allow to pipe additional flows', async t => {
   const oneToFiveFlow = flow.parallel(generateNumbersTasks(1, 5));
   const sixToTenFlow = flow.parallel(generateNumbersTasks(6, 10));
@@ -353,6 +341,18 @@ test('.waterfall() should not extract the last result when last task is a flow w
 
   t.deepEqual(actualResults, expectedResults, 'should return results as an array');
 });
+
+test('series', syncAndAsyncFlowTestMacro, flow.series, { from: 1, to: 5 }, range(1, 5));
+test('series', syncAndAsyncFlowTestMacro, flow.series, { from: 1, to: 5, withCallback: true }, range(1, 5));
+test('series', syncAndAsyncFlowTestMacro, flow.series, { from: 1, to: 5, withPromise: true }, range(1, 5));
+
+test('waterfall', syncAndAsyncFlowTestMacro, flow.waterfall, { from: 1, to: 5 }, 5);
+test('waterfall', syncAndAsyncFlowTestMacro, flow.waterfall, { from: 1, to: 5, withCallback: true }, 5);
+test('waterfall', syncAndAsyncFlowTestMacro, flow.waterfall, { from: 1, to: 5, withPromise: true }, 5);
+
+test('parallel', syncAndAsyncFlowTestMacro, flow.parallel, { from: 1, to: 5 }, range(1, 5));
+test('parallel', syncAndAsyncFlowTestMacro, flow.parallel, { from: 1, to: 5, withCallback: true }, range(1, 5));
+test('parallel', syncAndAsyncFlowTestMacro, flow.parallel, { from: 1, to: 5, withPromise: true }, range(1, 5));
 
 test('series', unwWrapSingleTaskResultMacro, flow.series);
 test('parallel', unwWrapSingleTaskResultMacro, flow.parallel);
