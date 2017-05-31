@@ -129,7 +129,7 @@ Take a look at the examples [here](examples).
 
 The main exposed function to create flows
 
-* `tasks` _Array&lt;Function|Task&gt; | Object{ string: Function|Task, ... }_ - The array or object of normal functions or `Task` instances to run
+* `tasks` _Array&lt;Function|Task|Flow&gt; | Object{ string: Function|Task|Flow, ... }_ - The array or object of normal functions, `Task` or `Flow` instances to run
 * `options` _Options_ - The Flow's options
 
 #### Flow factory functions
