@@ -22,16 +22,18 @@ const generateNumbersTasks = (from, to, { withCallback, withPromise } = {}) => {
     });
 };
 
-async function flowTestMacro(t, flowFactoryFn, taskOpts, expectedResults) {
+// Tests macros
+
+async function syncAndAsyncFlowTestMacro(t, flowFactoryFn, taskOpts, expectedResults) {
   const { from, to } = taskOpts;
   const testFlow = flowFactoryFn(generateNumbersTasks(from, to, taskOpts));
 
   const { results: actualResults } = await testFlow.run();
 
-  t.deepEqual(actualResults, expectedResults, 'should return the expected results');
+  t.deepEqual(actualResults, expectedResults);
 }
 
-flowTestMacro.title = (flowType, _, taskOpts) => {
+syncAndAsyncFlowTestMacro.title = (flowType, _, taskOpts) => {
   let testTitle = `.${flowType}() should support `;
 
   if (taskOpts.withCallback) {
@@ -44,6 +46,20 @@ flowTestMacro.title = (flowType, _, taskOpts) => {
 
   return testTitle;
 };
+
+async function unwWrapSingleTaskResultMacro(t, flowFactoryFn) {
+  const testFlow = flowFactoryFn([
+    () => Promise.resolve(range(1, 5))
+  ]);
+  const expectedResults = range(1, 5);
+
+  const { results: actualResults } = await testFlow.run();
+
+  t.deepEqual(actualResults, expectedResults);
+}
+
+unwWrapSingleTaskResultMacro.title = flowType =>
+  `.${flowType}() should extract the result when it contains a single task`;
 
 test('should expose the flows factory functions', t => {
   t.is(typeof flow, 'function', 'should expose the main flow function');
@@ -114,17 +130,17 @@ test('.waterfall() should return only the last result', async t => {
   t.is(errors.length, 0, 'should return an empty errors array');
 });
 
-test('series', flowTestMacro, flow.series, { from: 1, to: 5 }, range(1, 5));
-test('series', flowTestMacro, flow.series, { from: 1, to: 5, withCallback: true }, range(1, 5));
-test('series', flowTestMacro, flow.series, { from: 1, to: 5, withPromise: true }, range(1, 5));
+test('series', syncAndAsyncFlowTestMacro, flow.series, { from: 1, to: 5 }, range(1, 5));
+test('series', syncAndAsyncFlowTestMacro, flow.series, { from: 1, to: 5, withCallback: true }, range(1, 5));
+test('series', syncAndAsyncFlowTestMacro, flow.series, { from: 1, to: 5, withPromise: true }, range(1, 5));
 
-test('waterfall', flowTestMacro, flow.waterfall, { from: 1, to: 5 }, 5);
-test('waterfall', flowTestMacro, flow.waterfall, { from: 1, to: 5, withCallback: true }, 5);
-test('waterfall', flowTestMacro, flow.waterfall, { from: 1, to: 5, withPromise: true }, 5);
+test('waterfall', syncAndAsyncFlowTestMacro, flow.waterfall, { from: 1, to: 5 }, 5);
+test('waterfall', syncAndAsyncFlowTestMacro, flow.waterfall, { from: 1, to: 5, withCallback: true }, 5);
+test('waterfall', syncAndAsyncFlowTestMacro, flow.waterfall, { from: 1, to: 5, withPromise: true }, 5);
 
-test('parallel', flowTestMacro, flow.parallel, { from: 1, to: 5 }, range(1, 5));
-test('parallel', flowTestMacro, flow.parallel, { from: 1, to: 5, withCallback: true }, range(1, 5));
-test('parallel', flowTestMacro, flow.parallel, { from: 1, to: 5, withPromise: true }, range(1, 5));
+test('parallel', syncAndAsyncFlowTestMacro, flow.parallel, { from: 1, to: 5 }, range(1, 5));
+test('parallel', syncAndAsyncFlowTestMacro, flow.parallel, { from: 1, to: 5, withCallback: true }, range(1, 5));
+test('parallel', syncAndAsyncFlowTestMacro, flow.parallel, { from: 1, to: 5, withPromise: true }, range(1, 5));
 
 test('any flow instance should allow to pipe additional flows', async t => {
   const oneToFiveFlow = flow.parallel(generateNumbersTasks(1, 5));
@@ -337,3 +353,7 @@ test('.waterfall() should not extract the last result when last task is a flow w
 
   t.deepEqual(actualResults, expectedResults, 'should return results as an array');
 });
+
+test('series', unwWrapSingleTaskResultMacro, flow.series);
+test('parallel', unwWrapSingleTaskResultMacro, flow.parallel);
+test('waterfall', unwWrapSingleTaskResultMacro, flow.waterfall);
