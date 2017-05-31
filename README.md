@@ -294,11 +294,11 @@ that should be run in some of the run modes: `series | waterfall | parallel`.
 // Flow public interface
 const Flow = {
   name: string, // used only for debuggability
-  type: 'series' | 'waterfall' | 'parallel', // used only for debuggability
-  run(Context) -> Promise<Data>,
+  mode: 'series' | 'waterfall' | 'parallel', // used only for debuggability
+  run([Context]) -> Promise<Data>,
   asTask([id]) -> Task,
   pipe(Flow) -> Flow, // Returns itself
-  unpipe([Flow]) -> Flow, // Returns itself
+  unpipe([Flow]) -> Flow // Returns itself
 };
 ```
 
@@ -340,7 +340,7 @@ someFlow.unpipe(someOtherFlow).run(Context) -> Promise<Data>
 
 ## Run modes
 
-Here is a detail of the difference between the run modes.
+These are the differences between the different run modes.
 
 > All the modes when running with `options.abortOnError = true` will abort its execution
 whenever an error occurs in the current task execution and will not run the pending ones.
@@ -349,14 +349,20 @@ whenever an error occurs in the current task execution and will not run the pend
 and will add the occurred errors to the `data.errors` array and the corresponding results array index
 or object key will be `undefined`.
 
+> All the modes when a flow contains a single task it will un-wrap such task result and that
+will be the resulting value of `data.results` unlike for multiple tasks flows that it will be
+an array or object depending on the provided tasks type.
+
 ### series
 
 It executes its tasks in series, so the next task will start running only until the previous one has finished.
 
 ### waterfall
 
-It behaves like `series` with the only difference that it passes the previous task result as
-argument to the next one. Take a look at the `pipedValue` argument in the handler signature above.
+It behaves like `series` with the difference that it passes the previous task result as
+argument to the next one and the final `data.results` will be the last task's returned value.
+
+> Take a look at the `pipedValue` argument in the handler signature above.
 
 ### parallel
 
