@@ -1,6 +1,6 @@
 # Flow-wing
 
-> A simple library to build complex flows easily, through composed/piped tasks flows
+> A simple library to easily build complex flows through composed/piped tasks flows
 
 Flow-wing is a flow control library with support for composable, pipeable tasks flows with shared runtime context.
 
