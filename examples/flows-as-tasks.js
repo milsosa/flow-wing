@@ -33,7 +33,7 @@ const oneToFive = flow.parallel({
 }, getOptions(options, 'oneToFive'));
 
 const sixToTen = flow.parallel({
-  six: delayed(5),
+  six: delayed(6),
   seven: delayed(7),
   eight: delayed(8),
   nine: delayed(9),
@@ -41,7 +41,7 @@ const sixToTen = flow.parallel({
 }, getOptions(options, 'sixToTen'));
 
 const elevenToFifteen = flow.parallel([
-  delayed(10),
+  delayed(11),
   delayed(12),
   delayed(13),
   delayed(14),

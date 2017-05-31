@@ -53,7 +53,7 @@ usersFlow.run(context)
     console.timeEnd('get users run time');
     Utils.prettyPrint('users flow results', data.results);
 
-    return getUsersPosts(data.context, data.results[0]);
+    return getUsersPosts(data.context, data.results);
   })
   .then(data => {
     Utils.prettyPrint('users posts results', data.results);

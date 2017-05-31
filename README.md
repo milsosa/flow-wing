@@ -355,7 +355,7 @@ It executes its tasks in series, so the next task will start running only until 
 
 ### waterfall
 
-It behaves like `series` with the only difference that it pass the previous task result as
+It behaves like `series` with the only difference that it passes the previous task result as
 argument to the next one. Take a look at the `pipedValue` argument in the handler signature above.
 
 ### parallel
