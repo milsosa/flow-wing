@@ -2,13 +2,17 @@
 
 > A simple library to easily build complex flows through composed/piped tasks flows
 
-Flow-wing is a flow control library with support for composable, pipeable tasks flows with shared runtime context.
+Flow-wing is a flow-control library with support for composable, pipeable tasks flows with shared runtime context.
 
 It is built around two components: `Flow` and `Task`.
 
-A `Flow` is the representation of a list/object of one or more `Task` or `Flow` instances that will be executed in `series`, `waterfall` or `parallel`.
+A `Flow` is the representation of a list/object of one or more `Task` or `Flow` instances that will be executed
+in `series`, `waterfall` or `parallel`.
 
-A `Task` could be a normal function or a task created through `Task.create([id], handler, [...args])`.
+A `Task` could be a normal function, a task created with `Task.create([id], handler, [...args])` or even another
+`Flow` instance converted to `Task`.
+
+A task can be synchronous or asynchronous using callbacks or promises.
 
 ## Install
 
@@ -119,24 +123,25 @@ multiplyFlow.run(context)
 
 ## Examples
 
-Take a look at the examples [here](examples).
+You can see some usage examples [here](examples).
 
 ## API
 
-### flow(tasks, [Options]) -> Flow
+### flow(tasks, [Options]) → Flow
 
 > An alias for `flow.series(tasks, [Options])`
 
 The main exposed function to create flows
 
-* `tasks` _Array&lt;Function|Task|Flow&gt; | Object{ string: Function|Task|Flow, ... }_ - The array or object of normal functions, `Task` or `Flow` instances to run
-* `options` _Options_ - The Flow's options
+- `tasks` _Array&lt;Function|Task|Flow&gt; | Object{ string: Function|Task|Flow, ... }_ - The array or object of
+normal functions, `Task` or `Flow` instances to be executed every time the flow runs `flow.run()`.
+- `options` _Options_ - The Flow's options
 
 #### Flow factory functions
 
-- `flow.series(tasks, [Options]) -> Flow`
-- `flow.waterfall(tasks, [Options]) -> Flow`
-- `flow.parallel(tasks, [Options]) -> Flow`
+- `flow.series(tasks, [Options]) → Flow`
+- `flow.waterfall(tasks, [Options]) → Flow`
+- `flow.parallel(tasks, [Options]) → Flow`
 
 ```js
 const flow = require('flow-wing');
@@ -149,7 +154,7 @@ const options = {
 const taskTwoArg = 'some argument';
 const tasks = [
   (context) => Promise.resolve(1),
-  Task.create('taskTwo', (context, customArg) => Promise.resolve(customArg), taskTwoArg),
+  Task.create('taskTwo', (context, customArg) => Promise.resolve(customArg), taskTwoArg)
 ];
 
 const seriesFlow = flow.series(tasks, options); // same as flow(tasks, options);
@@ -176,8 +181,8 @@ const options = {
 ```
 
 - `resultsAsArray` - To return the values as array when the passed tasks are an object
-- `abortOnError` - Whether abort Flow's execution on error or not. When `false` all the occurred errors will be available on the `data.errors` array.
-- `concurrency` - Flow's execution concurrency.
+- `abortOnError` - Whether abort Flow's execution on error or not. When `false` all the occurred errors will be available on the `data.errors` array
+- `concurrency` - Flow's execution concurrency, used only for parallel flows
 - `name` - Flow's name, used only for debuggability
 
 ### Context
@@ -198,7 +203,7 @@ There are some details about the resulting `data` object and are as follow:
 ```js
 {
   context: Context,
-  results: Array<*> | Object{ string: *, ... } | *,
+  results: Array<any> | Object{ string: any, ... } | any,
   errors: Array<TaskError>
 }
 ```
@@ -246,37 +251,43 @@ The task's handler function should have the following signature.
  * @param Function [callback] The handler's callback. When not used, a value or Promise should be returned
  */
 function handler(context, pipedValue, ...args, callback) {
-  // body
+  // ...
+  // call callback(null, result)
+  // or return a Promise
 }
 
 // Task public interface
 const Task = {
   id: string,
-  run(Context, [value]) -> Promise,
-  pipe(handler, [...args]) -> Task, // Returns itself
+  run(Context, [value]) → Promise,
+  pipe(handler, [...args]) → Task // Returns itself
 }
 ```
 
 #### Methods
 
-##### Task.create([id], handler, [...args]) -> Task
+##### Task.create([id], handler, [...args]) → Task
 
-Tasks factory function
+Static method to create Tasks.
 
-- `id` _Optional_ - The task's id. When not provided it will be assigned as follow.
+> The benefit it has to create a Task instead of just passing a function
+is that it allows to pass custom task arguments and also being able to pipe
+additional handlers that can also have its own custom arguments.
+
+- `id` _Optional_ - The task's id. When not provided it will be assigned as follow:
   1. The handler/function's name (if any)
   2. The corresponding index in the tasks array
-  3. The key in the tasks object
-- `handler` _required (Function)_ - The task's handler. It should have the signature defined above.
-- `...args` _Optional_ - The task's specific additional arguments.
+  3. The corresponding key in the tasks object
+- `handler` _required (Function)_ - The task's handler. _It should have the signature defined above_
+- `...args` _Optional_ - The task's specific additional arguments
 
-##### run(Context, [value]) -> Promise&lt;any&gt;
+##### run(Context, [value]) → Promise&lt;any&gt;
 
 The method to run the task's handler(s).
 
 > This method is meant to be only called by the running flow the task belongs to.
 
-##### pipe(handler, [...args]) -> Task
+##### pipe(handler, [...args]) → Task
 
 This method adds additional handlers/functions to be executed when the task runs.
 
@@ -295,28 +306,28 @@ that should be run in some of the run modes: `series | waterfall | parallel`.
 const Flow = {
   name: string, // used only for debuggability
   mode: 'series' | 'waterfall' | 'parallel', // used only for debuggability
-  run([Context]) -> Promise<Data>,
-  asTask([id]) -> Task,
-  pipe(Flow) -> Flow, // Returns itself
-  unpipe([Flow]) -> Flow // Returns itself
+  run([Context]) → Promise<Data>,
+  asTask([id]) → Task,
+  pipe(Flow) → Flow, // Returns itself
+  unpipe([Flow]) → Flow // Returns itself
 };
 ```
 
 #### Methods
 
-##### run(Context) -> Promise&lt;Data&gt;
+##### run([Context]) → Promise&lt;Data&gt;
 
 The main method to run the flow's tasks execution.
 
 ```js
-someFlow.run(Context) -> Promise<Data>
+someFlow.run(Context) → Promise<Data>
 ```
 
-##### asTask([id]) -> Task
+##### asTask([id]) → Task
 
 Converts the Flow to a Task so that can be run into another Flow.
 
-##### pipe(Flow) -> Flow
+##### pipe(Flow) → Flow
 
 > It's like converting a list of flows to task and running them in `waterfall`
 
@@ -327,15 +338,15 @@ Pipes the provided `Flow` into the current one and returns itself.
 - Once a flow is piped it will remain piped unless it's un-piped
 
 ```js
-someFlow.pipe(someOtherFlow).run(Context) -> Promise<Data>
+someFlow.pipe(someOtherFlow).run(Context) → Promise<Data>
 ```
 
-##### unpipe([Flow]) -> Flow
+##### unpipe([Flow]) → Flow
 
 Un-pipes the provided `Flow` or all ones if not provided from the current one and returns itself.
 
 ```js
-someFlow.unpipe(someOtherFlow).run(Context) -> Promise<Data>
+someFlow.unpipe(someOtherFlow).run(Context) → Promise<Data>
 ```
 
 ## Run modes
