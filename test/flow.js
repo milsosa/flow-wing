@@ -1,7 +1,7 @@
 import test from 'ava';
 import { range as generateRange } from 'range';
 import sinon from 'sinon';
-import flow from '../lib/flow';
+import flow from '../lib';
 
 const range = (from, to) => generateRange(from, to + 1);
 

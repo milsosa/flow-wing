@@ -2,7 +2,7 @@
 
 const VError = require('verror');
 const Promise = require('bluebird');
-const flow = require('../index');
+const flow = require('../lib');
 
 const Task = flow.Task;
 

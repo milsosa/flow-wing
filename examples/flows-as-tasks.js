@@ -1,7 +1,7 @@
 'use strict';
 
 const VError = require('verror');
-const flow = require('../index');
+const flow = require('../lib');
 const Utils = require('./utils');
 
 const options = {

@@ -2,7 +2,7 @@
 
 const VError = require('verror');
 const axios = require('axios');
-const flow = require('../index');
+const flow = require('../lib');
 const Utils = require('./utils');
 
 const Task = flow.Task;
