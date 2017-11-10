@@ -33,16 +33,6 @@ test('.isFlow() should return true when a flow instance is passed', t => {
   t.false(Utils.isFlow({}), 'should return false for an object');
 });
 
-test('.restArgs() should return an array of rest arguments', t => {
-  const fn = function (skip) {
-    return Utils.restArgs(arguments, skip);
-  };
-
-  t.is(Array.isArray(fn(1, 'arg1')), true, 'should return an array');
-  t.is(fn(1, 'arg1').length, 1, 'should return an array with the rest of arguments');
-  t.is(fn(2, 'arg1', 'arg2').length, 1, 'should return an array with the rest of arguments');
-});
-
 test('.buildTaskError() should build a TaskError that includes the passed cause', t => {
   const cause = new Error('something went wrong');
   const taskID = 'task-id';
