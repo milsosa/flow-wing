@@ -17,12 +17,20 @@
     "task",
     "waterfall"
   ],
+  "homepage": "https://github.com/milsosa/flow-wing#readme",
+  "bugs": {
+    "url": "https://github.com/milsosa/flow-wing/issues"
+  },
   "license": "MIT",
   "author": "Milton Sosa <sosamilton19@gmail.com>",
   "files": [
     "dist"
   ],
   "main": "dist/index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/milsosa/flow-wing.git"
+  },
   "scripts": {
     "build": "rm -rf dist && babel --copy-files --out-dir dist lib",
     "test": "xo && nyc ava -v",
