@@ -37,25 +37,25 @@
     "test:watch": "nyc ava -v --watch"
   },
   "dependencies": {
-    "bluebird": "~3.5.1",
-    "debug": "~3.1.0",
+    "bluebird": "^3.5.2",
+    "debug": "^4.1.0",
     "is-promise": "^2.1.0",
     "lodash.defaults": "^4.2.0",
-    "lodash.isfunction": "^3.0.8",
+    "lodash.isfunction": "^3.0.9",
     "lodash.isplainobject": "^4.0.6",
     "lodash.map": "^4.6.0",
     "lodash.partial": "^4.2.1",
     "verror": "^1.10.0"
   },
   "devDependencies": {
-    "ava": "^0.23.0",
-    "axios": "^0.17.0",
+    "ava": "^0.25.0",
+    "axios": "^0.18.0",
     "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "nyc": "^11.3.0",
+    "babel-preset-env": "^1.7.0",
+    "nyc": "^13.0.1",
     "range": "^0.0.3",
-    "sinon": "^4.1.2",
-    "xo": "^0.18.2"
+    "sinon": "^6.3.5",
+    "xo": "^0.23.0"
   },
   "engines": {
     "node": ">=4"
