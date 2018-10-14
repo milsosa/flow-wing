@@ -76,9 +76,9 @@ flow.parallel(tasks, getOptions(options, 'mainFlow'))
     // { context: { some: 'data', delay: 100 },
     //   results: { total: 120 } }
   })
-  .catch(err => {
-    // err = TaskError, a VError instance
-    console.error(VError.fullStack(err));
+  .catch(error => {
+    // error = TaskError, a VError instance
+    console.error(VError.fullStack(error));
     // The error cause
-    console.error(err.cause());
+    console.error(error.cause());
   });

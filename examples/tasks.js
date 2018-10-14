@@ -4,7 +4,7 @@ const VError = require('verror');
 const Promise = require('bluebird');
 const flow = require('../lib');
 
-const Task = flow.Task;
+const { Task } = flow;
 
 const multiplyOne = (ctx, number, callback) => {
   setTimeout(() => callback(null, number * ctx.multiplier), ctx.delay);
@@ -47,11 +47,11 @@ numbersSeriesFlow.run({ multiplier: 2, delay: 500 })
     console.timeEnd('serial run time');
     console.log('serial results', results);
   })
-  .catch(err => {
-    // err = TaskError, a VError instance
-    console.error(VError.fullStack(err));
-    // The error cause
-    console.error(err.cause());
+  .catch(error => {
+    // error = TaskError, a VError instance
+    console.error(VError.fullStack(error));
+    // The error's cause
+    console.error(error.cause());
   });
 
 console.time('parallel run time');
@@ -60,9 +60,9 @@ numbersParallelFlow.run({ multiplier: 2, delay: 2000 })
     console.timeEnd('parallel run time');
     console.log('parallel results', results);
   })
-  .catch(err => {
-    // err = TaskError, a VError instance
-    console.error(VError.fullStack(err));
-    // The error cause
-    console.error(err.cause());
+  .catch(error => {
+    // error = TaskError, a VError instance
+    console.error(VError.fullStack(error));
+    // The error's cause
+    console.error(error.cause());
   });

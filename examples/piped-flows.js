@@ -4,7 +4,7 @@ const VError = require('verror');
 const flow = require('../lib');
 const Utils = require('./utils');
 
-const Task = flow.Task;
+const { Task } = flow;
 
 const options = {
   resultsAsArray: true,
@@ -91,11 +91,11 @@ numbersFlow
   .then(data => {
     Utils.prettyPrint('piped flows final result', data);
   })
-  .catch(err => {
-    // err = TaskError, a VError instance
-    console.error(VError.fullStack(err));
-    // The error cause
-    console.error(err.cause());
+  .catch(error => {
+    // error = TaskError, a VError instance
+    console.error(VError.fullStack(error));
+    // The error's cause
+    console.error(error.cause());
   });
 
 // Flows as task

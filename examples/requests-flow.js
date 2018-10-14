@@ -5,7 +5,7 @@ const axios = require('axios');
 const flow = require('../lib');
 const Utils = require('./utils');
 
-const Task = flow.Task;
+const { Task } = flow;
 const context = {
   baseUrl: 'https://jsonplaceholder.typicode.com',
   postsPath: '/posts',
@@ -16,9 +16,9 @@ const getUsers = Task.create('users', ctx => {
   return axios.get(ctx.baseUrl + ctx.usersPath)
     .then(response => response.data);
 })
-.pipe(Utils.tapLog('users list'))
-.pipe((ctx, users) => users.map(user => ({ id: user.id, username: user.username })))
-.pipe(Utils.tapLog('transformed users list'));
+  .pipe(Utils.tapLog('users list'))
+  .pipe((ctx, users) => users.map(user => ({ id: user.id, username: user.username })))
+  .pipe(Utils.tapLog('transformed users list'));
 
 const getPosts = (ctx, userId) => {
   return axios.get(`${ctx.baseUrl + ctx.postsPath}?userId=${userId}`)
@@ -58,9 +58,9 @@ usersFlow.run(context)
   .then(data => {
     Utils.prettyPrint('users posts results', data.results);
   })
-  .catch(err => {
-    // err = TaskError, a VError instance
-    console.error(VError.fullStack(err));
-    // The error cause
-    console.error(err.cause());
+  .catch(error => {
+    // error = TaskError, a VError instance
+    console.error(VError.fullStack(error));
+    // The error's cause
+    console.error(error.cause());
   });
