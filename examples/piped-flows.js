@@ -36,7 +36,7 @@ const numbersFlow = flow.parallel({
 const addFlow = flow([
   Task.create('add', (ctx, numbers) => {
     // Fail task
-    // throw new Error('an error happended in the add flow');
+    // throw new Error('an error happened in the add flow');
 
     Utils.prettyPrint('addFlow input', numbers);
     const tasks = flatten(numbers).map(num => delayed(num + 5));
@@ -68,7 +68,7 @@ const multiplyFlow = flow([
 const subtractFlow = flow([
   Task.create('extract', (ctx, numbers) => {
     // Uncomment to make task fail
-    // throw new Error('an error happended in the subtract flow');
+    // throw new Error('an error happened in the subtract flow');
 
     Utils.prettyPrint('subtractFlow input', numbers);
     const tasks = flatten(numbers).map(num => delayed(num - 1));

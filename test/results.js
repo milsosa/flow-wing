@@ -30,7 +30,7 @@ test('.parse() should convert the results to when resultsAsArray=true', t => {
   t.deepEqual(actualResults, expectedResults);
 });
 
-test('.parse() should return the last result when optsion.mode=waterfall', t => {
+test('.parse() should return the last result when options.mode=waterfall', t => {
   const results = { task1: 1, task2: 2, task3: 3 };
   const tasksIDs = Object.keys(results);
   const options = { resultsAsArray: true, mode: 'waterfall' };
