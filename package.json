@@ -1,6 +1,6 @@
 {
   "name": "flow-wing",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A simple library to easily build complex flows through composed/piped tasks flows",
   "keywords": [
     "async",
