@@ -1,4 +1,4 @@
-# Flow-wing
+# Flow-wing [![Build Status](https://travis-ci.com/milsosa/flow-wing.svg?branch=master)](https://travis-ci.com/milsosa/flow-wing)
 
 > A simple library to easily build complex flows through composed/piped tasks flows
 
