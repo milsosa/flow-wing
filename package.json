@@ -21,24 +21,43 @@
   "bugs": {
     "url": "https://github.com/milsosa/flow-wing/issues"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/milsosa/flow-wing.git"
+  },
   "license": "MIT",
   "author": "Milton Sosa <sosamilton19@gmail.com>",
   "files": [
     "dist"
   ],
-  "main": "dist/index",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/milsosa/flow-wing.git"
-  },
+  "main": "dist/index.js",
   "scripts": {
-    "test": "xo && nyc ava -v",
-    "test:watch": "nyc ava -v --watch",
     "build": "rm -rf dist && babel --copy-files --out-dir dist lib",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "xo && nyc ava -v",
+    "test:watch": "nyc ava -v --watch"
+  },
+  "xo": {
+    "esnext": true,
+    "overrides": [
+      {
+        "files": "examples/**/*.js",
+        "rules": {
+          "no-unused-vars": 1
+        }
+      }
+    ],
+    "rules": {
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ],
+      "capitalized-comments": "off",
+      "no-use-extend-native/no-use-extend-native": "off"
+    },
+    "space": 2
   },
   "dependencies": {
-    "bluebird": "^3.5.2",
     "debug": "^4.1.0",
     "is-promise": "^2.1.0",
     "lodash.defaults": "^4.2.0",
@@ -49,13 +68,14 @@
     "verror": "^1.10.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
     "ava": "^0.25.0",
     "axios": "^0.18.0",
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "nyc": "^13.0.1",
+    "nyc": "^13.1.0",
     "range": "^0.0.3",
-    "sinon": "^6.3.5",
+    "sinon": "^7.1.1",
     "xo": "^0.23.0"
   },
   "engines": {
@@ -65,26 +85,6 @@
     "reporter": [
       "lcov",
       "text-summary"
-    ]
-  },
-  "xo": {
-    "space": 2,
-    "esnext": true,
-    "rules": {
-      "object-curly-spacing": [
-        "error",
-        "always"
-      ],
-      "capitalized-comments": "off",
-      "no-use-extend-native/no-use-extend-native": "off"
-    },
-    "overrides": [
-      {
-        "files": "examples/**/*.js",
-        "rules": {
-          "no-unused-vars": 1
-        }
-      }
     ]
   }
 }

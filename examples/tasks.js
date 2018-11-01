@@ -1,7 +1,6 @@
 'use strict';
 
 const VError = require('verror');
-const Promise = require('bluebird');
 const flow = require('../lib');
 
 const { Task } = flow;
@@ -13,7 +12,7 @@ const multiplyOne = (ctx, number, callback) => {
 const multiplyTwo = (ctx, number, multiplier, delay) => {
   // Uncomment to make task fail
   // return Promise.reject(new Error(`some weird error multiplying ${number}`));
-  return Promise.delay(delay, number * multiplier);
+  return new Promise(resolve => setTimeout(resolve, number * multiplier, delay));
 };
 
 const multiplyThree = (ctx, number) => {
