@@ -12,7 +12,7 @@ const multiplyOne = (ctx, number, callback) => {
 const multiplyTwo = (ctx, number, multiplier, delay) => {
   // Uncomment to make task fail
   // return Promise.reject(new Error(`some weird error multiplying ${number}`));
-  return new Promise(resolve => setTimeout(resolve, number * multiplier, delay));
+  return new Promise(resolve => setTimeout(resolve, delay, number * multiplier));
 };
 
 const multiplyThree = (ctx, number) => {
