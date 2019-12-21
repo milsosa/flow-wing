@@ -218,7 +218,7 @@ test('.parallel() should abort flow execution on error when passed abortOnError=
   const testFlow = flow.parallel(tasks, { abortOnError: true, name: 'test-flow' }, Error);
   const expectedErrorMsg = 'task "1" in flow{test-flow}:parallel has failed: something went wrong';
 
-  const error = await t.throws(testFlow.run());
+  const error = await t.throwsAsync(() => testFlow.run());
 
   t.is(error.name, 'TaskError', 'should be TaskError instance');
   t.is(error.message, expectedErrorMsg);
@@ -288,7 +288,7 @@ test('.series() should abort flow execution on error when passed abortOnError=tr
   const testFlow = flow.series(tasks, { abortOnError: true, name: 'test-flow' }, Error);
   const expectedErrorMsg = 'task "1" in flow{test-flow}:series has failed: something went wrong';
 
-  const error = await t.throws(testFlow.run());
+  const error = await t.throwsAsync(() => testFlow.run());
 
   t.is(error.name, 'TaskError', 'should be TaskError instance');
   t.is(error.message, expectedErrorMsg);
@@ -304,7 +304,7 @@ test('.waterfall() should abort flow execution on error when passed abortOnError
   const testFlow = flow.waterfall(tasks, { abortOnError: true, name: 'test-flow' }, Error);
   const expectedErrorMsg = 'task "1" in flow{test-flow}:waterfall has failed: something went wrong';
 
-  const error = await t.throws(testFlow.run());
+  const error = await t.throwsAsync(() => testFlow.run());
 
   t.is(error.name, 'TaskError', 'should be TaskError instance');
   t.is(error.message, expectedErrorMsg);
