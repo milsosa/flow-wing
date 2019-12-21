@@ -51,7 +51,7 @@ for (let i = 1; i <= 5; i++) {
   testFlow.run(context)
     .then(data => {
       console.log('execution %d finished with %d errors', i, data.errors.length);
-      console.log('execution %d results: ', i, data.results);
+      console.log('execution %d results:', i, data.results);
     })
     .catch(error => {
       // error = TaskError, a VError instance

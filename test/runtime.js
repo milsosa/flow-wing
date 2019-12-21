@@ -2,9 +2,8 @@ import test from 'ava';
 import createRuntime from '../lib/flow/runtime';
 
 test('should throw when an invalid runtime is provided', t => {
-  const expectedErrorMatcher = /^You must provide only the "context" parameter.*/;
-
-  t.throws(() => createRuntime({}), Error, expectedErrorMatcher);
+  const expectedErrorMatcher = 'You must provide only the \'context\' parameter.*';
+  t.throws(() => createRuntime({}, undefined, undefined, {}), Error, expectedErrorMatcher);
 });
 
 test('should return a new runtime when not provided an existing one', t => {

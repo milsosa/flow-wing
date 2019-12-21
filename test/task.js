@@ -87,7 +87,7 @@ test('.run() should reject the promise when handler(s) calls callback with error
   const handler = sinon.stub().yields(handlerError);
   const task = Task.create(handler);
 
-  const actualError = await t.throws(task.run({}));
+  const actualError = await t.throwsAsync(() => task.run({}));
 
   t.is(actualError, handlerError);
 });
@@ -97,7 +97,7 @@ test('.run() should reject the promise when handler(s) return a rejected promise
   const handler = sinon.stub().returns(Promise.reject(handlerError));
   const task = Task.create(handler);
 
-  const actualError = await t.throws(task.run({}));
+  const actualError = await t.throwsAsync(() => task.run({}));
 
   t.is(actualError, handlerError);
 });

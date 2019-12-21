@@ -9,7 +9,7 @@ const verboseEnabled = process.argv
 
 function prettyPrint(label, data) {
   if (verboseEnabled) {
-    console.log(`${label} `, util.inspect(data, { depth: 3 }));
+    console.log(`${label}`, util.inspect(data, { depth: 3 }));
   }
 }
 

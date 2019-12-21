@@ -12,7 +12,7 @@ const multiplyOne = (ctx, number, callback) => {
 const multiplyTwo = (ctx, number, multiplier, delay) => {
   // Uncomment to make task fail
   // return Promise.reject(new Error(`some weird error multiplying ${number}`));
-  return new Promise(resolve => setTimeout(resolve, number * multiplier, delay));
+  return new Promise(resolve => setTimeout(resolve, delay, number * multiplier));
 };
 
 const multiplyThree = (ctx, number) => {
@@ -26,7 +26,7 @@ const tasksOneToFive = [1, 2, 3, 4, 5].map(number => {
 const tasksSixToTen = [6, 7, 8, 9, 10].map(number => {
   return Task.create(`task${number}`, multiplyTwo, number, 2, 1000)
     .pipe((ctx, result) => {
-      console.log('executing post-multiplier function over: ', result);
+      console.log('executing post-multiplier function over:', result);
       return result;
     });
 });
