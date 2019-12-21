@@ -37,6 +37,14 @@
     "test": "xo && nyc ava -v",
     "test:watch": "nyc ava -v --watch"
   },
+  "ava": {
+    "babel": {
+      "testOptions": {
+        "babelrc": false,
+        "configFile": false
+      }
+    }
+  },
   "xo": {
     "esnext": true,
     "overrides": [
