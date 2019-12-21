@@ -26,7 +26,7 @@ const tasksOneToFive = [1, 2, 3, 4, 5].map(number => {
 const tasksSixToTen = [6, 7, 8, 9, 10].map(number => {
   return Task.create(`task${number}`, multiplyTwo, number, 2, 1000)
     .pipe((ctx, result) => {
-      console.log('executing post-multiplier function over: ', result);
+      console.log('executing post-multiplier function over:', result);
       return result;
     });
 });
