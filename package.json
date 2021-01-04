@@ -81,7 +81,7 @@
     "@babel/preset-env": "^7.7.7",
     "@babel/runtime": "^7.7.7",
     "ava": "^2.4.0",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "nyc": "^14.1.1",
     "range": "^0.0.3",
     "sinon": "^7.5.0",
