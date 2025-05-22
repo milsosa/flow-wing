@@ -1,15 +1,23 @@
 'use strict';
 
-const partial = require('lodash.partial');
-const defaults = require('lodash.defaults');
-const isPlainObject = require('lodash.isplainobject');
-const createDebug = require('debug');
-const map = require('lodash.map');
-const Utils = require('../utils');
-const Runner = require('../runner');
-const Results = require('./results');
-const createRuntime = require('./runtime');
-const Task = require('./task');
+import partial from 'lodash.partial';
+import defaults from 'lodash.defaults';
+import isPlainObject from 'lodash.isplainobject';
+import createDebug from 'debug';
+import map from 'lodash.map';
+import Utils from '../utils';
+import Runner from '../runner';
+import * as Results from './results';
+import createRuntime from './runtime';
+import Task from './task';
+
+interface FlowFunction {
+  (tasks: any, options?: any): any; // Signature for flow(...) itself
+  series: (tasks: any, options?: any) => any;
+  waterfall: (tasks: any, options?: any) => any;
+  parallel: (tasks: any, options?: any) => any;
+  Task: any;
+}
 
 const defaultOptions = {
   resultsAsArray: true,
@@ -26,8 +34,8 @@ const defaultOptions = {
  *
  * @returns {Array<Task>} The list of converted Tasks
  */
-function prepareTasks(tasks) {
-  return map(tasks, (handler, id) => {
+function prepareTasks(tasks: any): any[] {
+  return map(tasks, (handler: any, id: any) => {
     // handler is a Flow, convert it to Task
     if (Utils.isFlow(handler)) {
       return handler.asTask(id);
@@ -58,41 +66,50 @@ function prepareTasks(tasks) {
  *
  * @returns {Flow} The Flow instance
  */
-function createFlow(runner, tasks, options) {
-  const opts = defaults(
+function createFlow(runner: any, tasks: any, options?: any): any {
+  const opts: {
+    mode: string,
+    resultsAsArray: boolean,
+    abortOnError: boolean,
+    concurrency: number,
+    name: string,
+    piped?: boolean // Add piped as an optional property
+  } = defaults(
     { mode: runner.name },
     options,
     { resultsAsArray: !isPlainObject(tasks) },
     defaultOptions
   );
-  const flowTasks = prepareTasks(tasks);
-  const orderedIDs = flowTasks.map(task => task.id);
+  const flowTasks: any[] = prepareTasks(tasks);
+  const orderedIDs: string[] = flowTasks.map(task => task.id);
   const debug = createDebug(`flow-wing{${opts.name}}:${opts.mode}`);
-  const pipedFlows = [];
+  const pipedFlows: any[] = [];
 
   /**
    * The Flow represents a list/object of one or more Task to be executed
    * in one of the run modes {series|waterfall|parallel}
    * @typedef {Object} Flow
    */
-  const flow = {
-    name: opts.name,
-    mode: opts.mode,
-    run(context, mainRuntime) {
-      const runtime = createRuntime(mainRuntime, context, flow, opts);
+  const flow: any = { // Temporarily type flow as any to add properties
+    name: opts.name as string,
+    mode: opts.mode as string,
+    run(context: any, mainRuntime?: any) {
+      const runtime: {errors: any[], previousResult: any, context: any, flow: any, opts: any} = createRuntime(mainRuntime, context, flow, opts);
 
       debug('executing with options: %o', opts);
 
       return runner(flowTasks, runtime, opts)
-        .then(data => {
+        .then((data: {results: any, errors: any[]}) => {
           debug('execution finished successfully');
 
-          const results = Results.parse(data.results, orderedIDs, opts);
+          const results: any = Results.parse(data.results, orderedIDs, opts);
           // Append errors to the runtime
-          runtime.errors.push(...data.errors);
+          if (data.errors) { // Ensure data.errors exists
+            runtime.errors.push(...data.errors);
+          }
           runtime.previousResult = results;
 
-          const flowResult = {
+          const flowResult: any = {
             results,
             errors: runtime.errors,
             context: runtime.context
@@ -100,11 +117,11 @@ function createFlow(runner, tasks, options) {
 
           return flowResult;
         })
-        .then(data => {
+        .then((data: any) => {
           if (pipedFlows.length > 0) {
             debug('running %d piped flows', pipedFlows.length);
-            const name = [flow.name].concat(pipedFlows.map(f => f.name)).join('>');
-            const pipedFlowsOpts = Object.assign({}, opts, { name });
+            const name: string = [flow.name].concat(pipedFlows.map(f => f.name)).join('>');
+            const pipedFlowsOpts: any = Object.assign({}, opts, { name });
 
             return createFlow(Runner.waterfall, prepareTasks(pipedFlows), pipedFlowsOpts)
               .run(runtime.context, runtime);
@@ -112,7 +129,7 @@ function createFlow(runner, tasks, options) {
 
           return data;
         })
-        .then(data => {
+        .then((data: {results: any}) => { // Assuming data has results property
           const isMainFlow = runtime.flow === flow;
           const onlyOneResult = Array.isArray(data.results) && data.results.length === 1;
 
@@ -125,18 +142,18 @@ function createFlow(runner, tasks, options) {
         });
     },
 
-    asTask(id) {
+    asTask(id: string | number) {
       debug('converting to task');
 
-      const task = Task.create(id, (context, runtime) => {
+      const task: any = Task.create(id, (context: any, runtime: any) => {
         return flow.run(context, runtime)
-          .then(data => data.results);
+          .then((data: {results: any}) => data.results);
       });
 
       return Object.defineProperty(task, 'flowAsTask', { value: true });
     },
 
-    pipe(flowToPipe) {
+    pipe(flowToPipe: any) {
       debug(`piping flow-wing{${flowToPipe.name}}:${flowToPipe.mode} into flow-wing{${flow.name}}:${flow.mode}`);
 
       opts.piped = true;
@@ -145,7 +162,7 @@ function createFlow(runner, tasks, options) {
       return flow;
     },
 
-    unpipe(flowToUnpipe) {
+    unpipe(flowToUnpipe?: any) { // Make flowToUnpipe optional
       if (!flowToUnpipe) {
         pipedFlows.splice(0, pipedFlows.length);
         opts.piped = false;
@@ -173,10 +190,10 @@ function createFlow(runner, tasks, options) {
   return flow;
 }
 
-const flow = partial(createFlow, Runner.series);
+const flow = partial(createFlow, Runner.series) as FlowFunction;
 flow.series = partial(createFlow, Runner.series);
 flow.waterfall = partial(createFlow, Runner.waterfall);
 flow.parallel = partial(createFlow, Runner.parallel);
 flow.Task = Task;
 
-module.exports = flow;
+export default flow;

@@ -32,18 +32,10 @@
   ],
   "main": "dist/index.js",
   "scripts": {
-    "build": "rm -rf dist && babel --copy-files --out-dir dist lib",
+    "build": "rm -rf dist && tsc",
     "prepublishOnly": "npm run build",
-    "test": "xo && nyc ava -v",
-    "test:watch": "nyc ava -v --watch"
-  },
-  "ava": {
-    "babel": {
-      "testOptions": {
-        "babelrc": false,
-        "configFile": false
-      }
-    }
+    "test": "ava -v",
+    "test:watch": "ava -v --watch"
   },
   "xo": {
     "esnext": true,
@@ -66,34 +58,33 @@
     "space": 2
   },
   "dependencies": {
-    "debug": "^4.1.1",
-    "is-promise": "^2.1.0",
+    "debug": "^4.4.1",
+    "is-promise": "^4.0.0",
     "lodash.defaults": "^4.2.0",
     "lodash.isfunction": "^3.0.9",
     "lodash.isplainobject": "^4.0.6",
     "lodash.map": "^4.6.0",
     "lodash.partial": "^4.2.1",
-    "verror": "^1.10.0"
+    "verror": "^1.10.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.7",
-    "@babel/core": "^7.7.7",
-    "@babel/preset-env": "^7.7.7",
-    "@babel/runtime": "^7.7.7",
-    "ava": "^2.4.0",
-    "axios": "^0.19.0",
-    "nyc": "^14.1.1",
+    "@types/debug": "^4.1.12",
+    "@types/lodash.defaults": "^4.2.9",
+    "@types/lodash.isfunction": "^3.0.9",
+    "@types/lodash.isplainobject": "^4.0.9",
+    "@types/lodash.map": "^4.6.13",
+    "@types/lodash.partial": "^4.2.9",
+    "@types/node": "^22.15.21",
+    "@types/sinon": "^17.0.4",
+    "@types/verror": "^1.10.11",
+    "ava": "^6.3.0",
+    "axios": "^1.9.0",
     "range": "^0.0.3",
-    "sinon": "^7.5.0",
-    "xo": "^0.25.3"
+    "sinon": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   },
   "engines": {
     "node": ">=4"
-  },
-  "nyc": {
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ]
   }
 }

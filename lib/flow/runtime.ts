@@ -1,6 +1,6 @@
 'use strict';
 
-const defaults = require('lodash.defaults');
+import defaults from 'lodash.defaults';
 
 const privateMark = Symbol('@private_runtime_mark');
 
@@ -37,4 +37,4 @@ function createRuntime(currentRuntime, context, flow, opts) {
   };
 }
 
-module.exports = createRuntime;
+export default createRuntime;

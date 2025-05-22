@@ -1,5 +1,5 @@
 import test from 'ava';
-import Results from '../lib/flow/results';
+import * as Results from '../lib/flow/results';
 
 test('should expose .parse() and .extractLast() methods', t => {
   t.is(typeof Results.parse, 'function');

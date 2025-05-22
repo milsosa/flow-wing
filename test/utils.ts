@@ -1,7 +1,9 @@
 import test from 'ava';
 import VError from 'verror';
-import flow, { Task } from '../lib/flow';
+import flow from '../lib/flow'; // Corrected import
 import Utils from '../lib/utils';
+
+const { Task } = flow; // Access Task via flow
 
 test('.isPromise() should return true when a task is passed', t => {
   const promise = Promise.resolve(true);
