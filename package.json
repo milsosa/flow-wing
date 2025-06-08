@@ -65,6 +65,7 @@
     "lodash.isplainobject": "^4.0.6",
     "lodash.map": "^4.6.0",
     "lodash.partial": "^4.2.1",
+    "npm-check-updates": "^18.0.1",
     "verror": "^1.10.1"
   },
   "devDependencies": {
@@ -74,7 +75,7 @@
     "@types/lodash.isplainobject": "^4.0.9",
     "@types/lodash.map": "^4.6.13",
     "@types/lodash.partial": "^4.2.9",
-    "@types/node": "^22.15.21",
+    "@types/node": "^22.15.30",
     "@types/sinon": "^17.0.4",
     "@types/verror": "^1.10.11",
     "ava": "^6.3.0",

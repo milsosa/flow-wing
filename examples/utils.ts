@@ -2,19 +2,23 @@
 
 import util from 'util';
 
+// Define a generic type for context and result to make tapLog more versatile
+type AnyObject = Record<string, any>;
+
 const verboseMatcher = /-v|--verbose/;
 const verboseEnabled = process.argv
   .filter(arg => verboseMatcher.test(arg))
   .length > 0;
 
-function prettyPrint(label: string, data: any): void {
+function prettyPrint(label: string, data: any): void { // data can be any type
   if (verboseEnabled) {
     console.log(`${label}`, util.inspect(data, { depth: 3 }));
   }
 }
 
-function tapLog(label: string): (ctx: any, result: any) => any {
-  return (ctx: any, result: any): any => {
+// Add a more specific return type for tapLog
+function tapLog<TContext extends AnyObject, TResult>(label: string): (ctx: TContext, result: TResult) => TResult {
+  return (ctx: TContext, result: TResult): TResult => {
     prettyPrint(`${label} ctx:`, ctx);
     prettyPrint(`${label} result:`, result);
     return result;

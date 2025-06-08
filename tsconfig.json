@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "es2020",
     "module": "CommonJS",
     "declaration": true,
     "outDir": "./dist",
@@ -11,6 +11,6 @@
     "resolveJsonModule": true,
     "moduleResolution": "node"
   },
-  "include": ["lib/**/*.ts", "examples/**/*.ts", "test/**/*.ts"],
+  "include": ["lib/**/*.ts", "test/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
