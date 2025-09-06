@@ -1,19 +1,19 @@
-'use strict';
+import createDebug from 'debug';
+import * as Utils from '../utils';
+import VError from 'verror';
+import { Task, Runtime, FlowOptions, RunnerResult } from '../types';
 
-const createDebug = require('debug');
-const Utils = require('../utils');
-
-function runTasks(tasks, runtime, flowOpts) {
+function runTasks(tasks: Task[], runtime: Runtime, flowOpts: FlowOptions): Promise<RunnerResult> {
   const debug = createDebug(`flow-wing{${flowOpts.name}}:runner:parallel`);
   const tasksIterator = tasks[Symbol.iterator]();
-  const { concurrency } = flowOpts;
-  const results = {};
-  const errors = [];
+  const { concurrency = Infinity } = flowOpts;
+  const results: Record<string, any> = {};
+  const errors: VError[] = [];
   let aborted = false;
   let running = 0;
   let index = 0;
-  let onComplete;
-  let onError;
+  let onComplete: (result: RunnerResult) => void;
+  let onError: (error: VError) => void;
 
   function next() {
     if (aborted) {
@@ -22,21 +22,20 @@ function runTasks(tasks, runtime, flowOpts) {
 
     const { value: task, done } = tasksIterator.next();
 
-    if (done && running > 0) {
+    if (done) {
+      if (running === 0 && !aborted) {
+        onComplete({ results, errors });
+      }
       return;
     }
 
-    if (done && running === 0 && !aborted) {
-      return onComplete({ results, errors });
-    }
-
-    const taskID = task.id || index;
+    const taskID = task.id || String(index);
     const passRuntime = task.flowAsTask;
 
     running += 1;
     index += 1;
 
-    if (!done && running < concurrency && !aborted) {
+    if (running < concurrency) {
       next();
     }
 
@@ -70,7 +69,7 @@ function runTasks(tasks, runtime, flowOpts) {
 
   debug(`running ${tasks.length} tasks`);
 
-  return new Promise((resolve, reject) => {
+  return new Promise<RunnerResult>((resolve, reject) => {
     onComplete = resolve;
     onError = reject;
 
@@ -78,12 +77,12 @@ function runTasks(tasks, runtime, flowOpts) {
   });
 }
 
-module.exports = {
-  run(tasks, runtime, flowOpts) {
-    if (tasks.length === 0) {
-      return Promise.resolve({ results: {}, errors: [] });
-    }
-
-    return runTasks(tasks, runtime, flowOpts);
+function run(tasks: Task[], runtime: Runtime, flowOpts: FlowOptions): Promise<RunnerResult> {
+  if (tasks.length === 0) {
+    return Promise.resolve({ results: {}, errors: [] });
   }
-};
+
+  return runTasks(tasks, runtime, flowOpts);
+}
+
+export default { run };

@@ -1,12 +1,11 @@
-'use strict';
+import VError from 'verror';
+import flow from '../src';
+import * as Utils from './utils';
+import { FlowOptions } from '../src/types';
 
-const VError = require('verror');
-const flow = require('../lib');
-const Utils = require('./utils');
+const { Task } = flow as any;
 
-const { Task } = flow;
-
-const options = {
+const options: FlowOptions = {
   resultsAsArray: true,
   abortOnError: true
 };
@@ -16,16 +15,16 @@ const context = {
   delayFactor: Utils.getDelayFactor()
 };
 
-const flatten = values => values.reduce((acc, value) => acc.concat(value), []);
+const flatten = (values: any[]): any[] => values.reduce((acc, value) => acc.concat(value), []);
 
-const getOptions = (opts, name) => Object.assign({}, opts, { name });
+const getOptions = (opts: FlowOptions, name: string): FlowOptions => ({ ...opts, name });
 
-const delayed = num => (ctx, cb) => {
+const delayed = (num: number) => (ctx: { delayFactor: number }, cb: (err: null, res: number) => void) => {
   const delay = num * ctx.delayFactor;
   setTimeout(() => cb(null, num), delay);
 };
 
-const numbersFlow = flow.parallel({
+const numbersFlow = (flow as any).parallel({
   one: delayed(1),
   two: delayed(2),
   three: delayed(3),
@@ -34,15 +33,15 @@ const numbersFlow = flow.parallel({
 }, getOptions(options, 'numbers'));
 
 const addFlow = flow([
-  Task.create('add', (ctx, numbers) => {
+  Task.create('add', (ctx: any, numbers: number[]) => {
     // Fail task
     // throw new Error('an error happened in the add flow');
 
     Utils.prettyPrint('addFlow input', numbers);
     const tasks = flatten(numbers).map(num => delayed(num + 5));
-    return flow.parallel(tasks, options)
+    return (flow as any).parallel(tasks, options)
       .run(ctx)
-      .then(data => {
+      .then((data: any) => {
         ctx.results = { numbers, add: data.results };
         Utils.prettyPrint('addFlow results', data);
         return data.results;
@@ -51,12 +50,12 @@ const addFlow = flow([
 ], getOptions(options, 'add'));
 
 const multiplyFlow = flow([
-  Task.create('multiplier', (ctx, numbers) => {
+  Task.create('multiplier', (ctx: any, numbers: number[]) => {
     Utils.prettyPrint('multiplyFlow input', numbers);
     const tasks = flatten(numbers).map(num => delayed(num * 5));
-    return flow.parallel(tasks, options)
+    return (flow as any).parallel(tasks, options)
       .run(ctx)
-      .then(data => {
+      .then((data: any) => {
         ctx.results.multiply = data.results;
         Utils.prettyPrint('multiplyFlow results', data);
         return data.results;
@@ -66,15 +65,15 @@ const multiplyFlow = flow([
 ], getOptions(options, 'multiply'));
 
 const subtractFlow = flow([
-  Task.create('extract', (ctx, numbers) => {
+  Task.create('extract', (ctx: any, numbers: number[]) => {
     // Uncomment to make task fail
     // throw new Error('an error happened in the subtract flow');
 
     Utils.prettyPrint('subtractFlow input', numbers);
     const tasks = flatten(numbers).map(num => delayed(num - 1));
-    return flow.parallel(tasks, options)
+    return (flow as any).parallel(tasks, options)
       .run(ctx)
-      .then(data => {
+      .then((data: any) => {
         ctx.results.subtract = data.results;
         Utils.prettyPrint('subtractFlow results', data);
         return data.results;
@@ -95,7 +94,7 @@ numbersFlow
     // error = TaskError, a VError instance
     console.error(VError.fullStack(error));
     // The error's cause
-    console.error(error.cause());
+    console.error((error as VError).cause());
   });
 
 // Flows as task
