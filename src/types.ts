@@ -45,7 +45,11 @@ export interface FlowOptions {
   piped?: boolean;
 }
 
-export type Runner = (tasks: Task[], runtime: Runtime, flowOpts: FlowOptions) => Promise<RunnerResult>;
+export interface RunnerResult {
+  errors: VError[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  results: Record<string, any>;
+}
 
 export interface FlowResult {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

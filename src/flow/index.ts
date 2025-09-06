@@ -4,7 +4,9 @@ import Runner from '../runner';
 import Results from './results';
 import createRuntime from './runtime';
 import TaskFactory from './task';
-import { Flow, Task, Runner as RunnerType, FlowOptions, Runtime, FlowResult, TaskHandler } from '../types';
+import { Flow, Task, FlowOptions, Runtime, FlowResult, TaskHandler, RunnerResult } from '../types';
+
+type RunnerType = (tasks: Task[], runtime: Runtime, flowOpts: FlowOptions) => Promise<RunnerResult>;
 
 function isPlainObject(obj: unknown): obj is Record<string, unknown> {
   return Object.prototype.toString.call(obj) === '[object Object]';
