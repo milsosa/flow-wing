@@ -1,0 +1,38 @@
+name: Publish to npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      version-type:
+        description: 'The type of version bump (patch, minor, major)'
+        required: true
+        default: 'patch'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Bump version and publish
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          npm version ${{ github.event.inputs.version-type }} -m "chore(release): %s"
+          npm publish
+          git push --follow-tags
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
