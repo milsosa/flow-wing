@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { it, expect, describe } from 'vitest';
 import sinon from 'sinon';
 import Task from '../src/flow/task';

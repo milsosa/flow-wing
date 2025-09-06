@@ -5,18 +5,22 @@ import { Flow, FlowOptions, Task } from './types';
 export { isPromise };
 
 // A simple implementation of isPlainObject
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isPlainObject(obj: any): obj is Record<string, any> {
   return Object.prototype.toString.call(obj) === '[object Object]';
 }
 
-export function isFunction(value: any): value is Function {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isFunction(value: any): value is (...args: any[]) => any {
   return typeof value === 'function';
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isTask(obj: any): obj is Task {
   return isPlainObject(obj) && isFunction(obj.run) && isFunction(obj.pipe);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isFlow(obj: any): obj is Flow {
   return isPlainObject(obj) && isFunction(obj.run) && isFunction(obj.asTask);
 }

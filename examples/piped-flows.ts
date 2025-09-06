@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import VError from 'verror';
 import flow from '../src';
 import * as Utils from './utils';

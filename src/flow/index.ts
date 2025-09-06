@@ -6,7 +6,7 @@ import createRuntime from './runtime';
 import TaskFactory from './task';
 import { Flow, Task, Runner as RunnerType, FlowOptions, Runtime, FlowResult, TaskHandler } from '../types';
 
-function isPlainObject(obj: any): obj is object {
+function isPlainObject(obj: unknown): obj is Record<string, unknown> {
   return Object.prototype.toString.call(obj) === '[object Object]';
 }
 
@@ -30,7 +30,7 @@ function prepareTasks(tasks: TaskInput[] | Record<string, TaskInput>): Task[] {
     }
 
     if (!Utils.isTask(handler)) {
-      return TaskFactory.create(id, handler);
+      return TaskFactory.create(id, handler as TaskHandler);
     }
 
     handler.id = handler.id || id;
@@ -54,6 +54,7 @@ function createFlow(runner: RunnerType, tasks: TaskInput[] | Record<string, Task
   const flow: Flow = {
     name: opts.name as string,
     mode: opts.mode as 'series' | 'waterfall' | 'parallel',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     run(context?: any, mainRuntime?: Runtime): Promise<FlowResult> {
       const runtime = createRuntime(mainRuntime, context, flow, opts);
       debug('executing with options: %o', opts);
@@ -95,7 +96,7 @@ function createFlow(runner: RunnerType, tasks: TaskInput[] | Record<string, Task
 
     asTask(id: string): Task {
       debug('converting to task');
-      const task = TaskFactory.create(id, (context: any, runtime: Runtime) => {
+      const task = TaskFactory.create(id, (context: unknown, runtime: Runtime) => {
         return flow.run(context, runtime).then(data => data.results);
       });
       return Object.defineProperty(task, 'flowAsTask', { value: true });

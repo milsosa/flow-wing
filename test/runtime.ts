@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { it, expect, describe } from 'vitest';
 import createRuntime from '../src/flow/runtime';
 import { Flow } from '../src/types';

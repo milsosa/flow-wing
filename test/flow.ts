@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { it, expect, describe } from 'vitest';
 import sinon from 'sinon';
 import flow from '../src';

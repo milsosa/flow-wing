@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import VError from 'verror';
 import flow from '../src';
 
-const { Task } = flow as any;
+const { Task } = flow;
 
 const multiplyOne = (ctx: { multiplier: number, delay: number }, number: number, callback: (err: null, res: number) => void) => {
   setTimeout(() => callback(null, number * ctx.multiplier), ctx.delay);
@@ -35,8 +36,8 @@ const tasksElevenToFifteen = [11, 12, 13, 14, 15].map(number => {
 
 const tasks = [...tasksOneToFive, ...tasksSixToTen, ...tasksElevenToFifteen];
 
-const numbersSeriesFlow = flow(tasks, { name: 'multiplier' });
-const numbersParallelFlow = (flow as any).parallel(tasks, { name: 'multiplier', concurrency: 5 });
+const numbersSeriesFlow = flow.series(tasks, { name: 'multiplier' });
+const numbersParallelFlow = flow.parallel(tasks, { name: 'multiplier', concurrency: 5 });
 
 console.time('serial run time');
 numbersSeriesFlow.run({ multiplier: 2, delay: 500 })

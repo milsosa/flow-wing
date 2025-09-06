@@ -5,7 +5,7 @@ import { Task, Runtime, FlowOptions, RunnerResult } from '../types';
 
 function run(tasks: Task[], runtime: Runtime, flowOpts: FlowOptions): Promise<RunnerResult> {
   const debug = createDebug(`flow-wing{${flowOpts.name}}:runner:${flowOpts.mode}`);
-  const results: Record<string, any> = {};
+  const results: Record<string, unknown> = {};
   const errors: VError[] = [];
 
   let skipPending = false;
@@ -37,7 +37,8 @@ function run(tasks: Task[], runtime: Runtime, flowOpts: FlowOptions): Promise<Ru
 
         return result;
       })
-      .catch(error => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .catch((error: any) => {
         if (skipPending) {
           throw error;
         }

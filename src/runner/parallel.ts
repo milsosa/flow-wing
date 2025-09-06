@@ -7,13 +7,14 @@ function runTasks(tasks: Task[], runtime: Runtime, flowOpts: FlowOptions): Promi
   const debug = createDebug(`flow-wing{${flowOpts.name}}:runner:parallel`);
   const tasksIterator = tasks[Symbol.iterator]();
   const { concurrency = Infinity } = flowOpts;
-  const results: Record<string, any> = {};
+  const results: Record<string, unknown> = {};
   const errors: VError[] = [];
   let aborted = false;
   let running = 0;
   let index = 0;
   let onComplete: (result: RunnerResult) => void;
-  let onError: (error: VError) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let onError: (error: any) => void;
 
   function next() {
     if (aborted) {
@@ -49,7 +50,8 @@ function runTasks(tasks: Task[], runtime: Runtime, flowOpts: FlowOptions): Promi
 
         next();
       })
-      .catch(error => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .catch((error: any) => {
         debug('task %s has failed due to: %s', taskID, error.message);
 
         running -= 1;

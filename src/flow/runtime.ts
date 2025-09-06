@@ -1,10 +1,11 @@
-import { VError } from 'verror';
 import { Flow, Runtime, privateMark } from '../types';
 
 function createRuntime(
   currentRuntime: Runtime | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context: any,
   flow: Flow,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   opts: any
 ): Runtime {
   if (currentRuntime && !currentRuntime[privateMark]) {

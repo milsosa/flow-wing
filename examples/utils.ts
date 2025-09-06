@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import util from 'util';
 
 const verboseMatcher = /-v|--verbose/;
