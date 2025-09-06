@@ -27,6 +27,7 @@
   },
   "license": "MIT",
   "author": "Milton Sosa <sosamilton19@gmail.com>",
+  "type": "module",
   "files": [
     "dist"
   ],
