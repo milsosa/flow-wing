@@ -78,9 +78,13 @@ function createFlow(runner: RunnerType, tasks: TaskInput[] | Record<string, Task
           if (pipedFlows.length > 0) {
             debug('running %d piped flows', pipedFlows.length);
             const name = [flow.name].concat(pipedFlows.map(f => f.name)).join('>');
-            const pipedFlowsOpts = { ...opts, name };
+            const pipedFlowsOpts = { ...opts, name, mode: 'waterfall' as const };
             return createFlow(Runner.waterfall, pipedFlows, pipedFlowsOpts)
-              .run(runtime.context, runtime);
+              .run(runtime.context, runtime)
+              .then(pipedData => {
+                data.results = pipedData.results;
+                return data;
+              });
           }
           return data;
         })
