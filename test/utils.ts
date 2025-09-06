@@ -4,7 +4,7 @@ import flow from '../src';
 import * as Utils from '../src/utils';
 import { FlowOptions } from '../src/types';
 
-const Task = (flow as any).Task;
+const { Task } = flow;
 
 describe('Utils', () => {
   it('.isPromise() should return true when a task is passed', () => {
@@ -30,7 +30,7 @@ describe('Utils', () => {
 
   it('.isFlow() should return true when a flow instance is passed', () => {
     const task = Task.create('task', () => {});
-    const testFlow = flow([task]);
+    const testFlow = flow.series([task]);
 
     expect(Utils.isFlow(testFlow)).toBe(true);
     expect(Utils.isFlow(() => {})).toBe(false);

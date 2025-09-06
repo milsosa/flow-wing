@@ -3,7 +3,7 @@ import flow from '../src';
 import * as Utils from './utils';
 import { FlowOptions } from '../src/types';
 
-const { Task } = flow as any;
+const { Task } = flow;
 
 const options: FlowOptions = {
   resultsAsArray: true,
@@ -24,7 +24,7 @@ const delayed = (num: number) => (ctx: { delayFactor: number }, cb: (err: null, 
   setTimeout(() => cb(null, num), delay);
 };
 
-const numbersFlow = (flow as any).parallel({
+const numbersFlow = flow.parallel({
   one: delayed(1),
   two: delayed(2),
   three: delayed(3),
@@ -32,14 +32,14 @@ const numbersFlow = (flow as any).parallel({
   five: delayed(5)
 }, getOptions(options, 'numbers'));
 
-const addFlow = flow([
+const addFlow = flow.series([
   Task.create('add', (ctx: any, numbers: number[]) => {
     // Fail task
     // throw new Error('an error happened in the add flow');
 
     Utils.prettyPrint('addFlow input', numbers);
     const tasks = flatten(numbers).map(num => delayed(num + 5));
-    return (flow as any).parallel(tasks, options)
+    return flow.parallel(tasks, options)
       .run(ctx)
       .then((data: any) => {
         ctx.results = { numbers, add: data.results };
@@ -49,11 +49,11 @@ const addFlow = flow([
   })
 ], getOptions(options, 'add'));
 
-const multiplyFlow = flow([
+const multiplyFlow = flow.series([
   Task.create('multiplier', (ctx: any, numbers: number[]) => {
     Utils.prettyPrint('multiplyFlow input', numbers);
     const tasks = flatten(numbers).map(num => delayed(num * 5));
-    return (flow as any).parallel(tasks, options)
+    return flow.parallel(tasks, options)
       .run(ctx)
       .then((data: any) => {
         ctx.results.multiply = data.results;
@@ -64,14 +64,14 @@ const multiplyFlow = flow([
   () => [6, 7, 8, 9, 10]
 ], getOptions(options, 'multiply'));
 
-const subtractFlow = flow([
+const subtractFlow = flow.series([
   Task.create('extract', (ctx: any, numbers: number[]) => {
     // Uncomment to make task fail
     // throw new Error('an error happened in the subtract flow');
 
     Utils.prettyPrint('subtractFlow input', numbers);
     const tasks = flatten(numbers).map(num => delayed(num - 1));
-    return (flow as any).parallel(tasks, options)
+    return flow.parallel(tasks, options)
       .run(ctx)
       .then((data: any) => {
         ctx.results.subtract = data.results;

@@ -3,7 +3,7 @@ import axios from 'axios';
 import flow from '../src';
 import * as Utils from './utils';
 
-const { Task } = flow as any;
+const { Task } = flow;
 
 const context = {
   baseUrl: 'https://jsonplaceholder.typicode.com',
@@ -45,7 +45,7 @@ const getUsersPosts = (ctx: typeof context, users: User[]) => {
       .pipe(Utils.tapLog(`${user.username}: posts' titles`));
   });
 
-  return (flow as any).parallel(getPostsTasks, { name: 'posts', concurrency: getPostsTasks.length, resultsAsArray: false })
+  return flow.parallel(getPostsTasks, { name: 'posts', concurrency: getPostsTasks.length, resultsAsArray: false })
     .run(ctx)
     .then((data: any) => {
       console.timeEnd('get posts run time');
@@ -53,7 +53,7 @@ const getUsersPosts = (ctx: typeof context, users: User[]) => {
     });
 };
 
-const usersFlow = flow({ getUsers }, { name: 'users', resultsAsArray: true });
+const usersFlow = flow.series({ getUsers }, { name: 'users', resultsAsArray: true });
 
 console.time('get users run time');
 usersFlow.run(context)

@@ -3,6 +3,8 @@ import flow from '../src';
 import * as Utils from './utils';
 import { FlowOptions } from '../src/types';
 
+const { Task } = flow;
+
 const options: FlowOptions = {
   resultsAsArray: true,
   abortOnError: false,
@@ -23,7 +25,7 @@ const delayed = (number: number) => (ctx: { delay: number }, previousResult: any
   }, delay);
 };
 
-const oneToFive = (flow as any).parallel({
+const oneToFive = flow.parallel({
   one: delayed(1),
   two: delayed(2),
   three: delayed(3),
@@ -31,7 +33,7 @@ const oneToFive = (flow as any).parallel({
   five: delayed(5)
 }, getOptions(options, 'oneToFive'));
 
-const sixToTen = (flow as any).parallel({
+const sixToTen = flow.parallel({
   six: delayed(6),
   seven: delayed(7),
   eight: delayed(8),
@@ -39,7 +41,7 @@ const sixToTen = (flow as any).parallel({
   ten: delayed(10)
 }, getOptions(options, 'sixToTen'));
 
-const elevenToFifteen = (flow as any).parallel([
+const elevenToFifteen = flow.parallel([
   delayed(11),
   delayed(12),
   delayed(13),
@@ -47,7 +49,7 @@ const elevenToFifteen = (flow as any).parallel([
   delayed(15)
 ], getOptions(options, 'elevenToFifteen'));
 
-const addTotal = flow({
+const addTotal = flow.series({
   total(context: any, numbers: number[][]) {
     // numbers = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15]]
     return numbers.reduce((acc, item) => acc.concat(item), [])
@@ -67,7 +69,7 @@ const context = {
   delay: Utils.getDelayFactor()
 };
 
-(flow as any).parallel(tasks, getOptions(options, 'mainFlow'))
+flow.parallel(tasks, getOptions(options, 'mainFlow'))
   .pipe(addTotal)
   .run(context)
   .then((data: any) => {

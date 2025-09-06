@@ -130,14 +130,9 @@ function createFlow(runner: RunnerType, tasks: TaskInput[] | Record<string, Task
   return flow;
 }
 
-const flow = createFlow.bind(null, Runner.series);
-const series = createFlow.bind(null, Runner.series);
-const waterfall = createFlow.bind(null, Runner.waterfall);
-const parallel = createFlow.bind(null, Runner.parallel);
-
-export default Object.assign(flow, {
-  series,
-  waterfall,
-  parallel,
+export default {
+  series: createFlow.bind(null, Runner.series),
+  waterfall: createFlow.bind(null, Runner.waterfall),
+  parallel: createFlow.bind(null, Runner.parallel),
   Task: TaskFactory,
-});
+};

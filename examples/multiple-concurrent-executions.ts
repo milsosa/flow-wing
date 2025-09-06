@@ -28,7 +28,7 @@ const delayed = (number: number) => (ctx: { delay: number }, previousResult: any
   }, delay);
 };
 
-const oneToFive = (flow as any).parallel({
+const oneToFive = flow.parallel({
   one: delayed(1),
   two: delayed(2),
   three: delayed(3),
@@ -44,7 +44,7 @@ const tasks = [
   oneToFive.asTask('oneToFive5').pipe(Utils.tapLog('oneToFive5'))
 ];
 
-const testFlow = (flow as any).parallel(tasks, getOptions(options, 'mainFlow'));
+const testFlow = flow.parallel(tasks, getOptions(options, 'mainFlow'));
 
 for (let i = 1; i <= 5; i++) {
   testFlow.run(context)

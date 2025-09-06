@@ -31,15 +31,14 @@ const generateNumbersTasks = (from: number, to: number, { withCallback, withProm
 
 describe('Flow', () => {
   it('should expose the flows factory functions', () => {
-    expect(typeof flow).toBe('function');
-    expect(typeof (flow as any).series).toBe('function');
-    expect(typeof (flow as any).waterfall).toBe('function');
-    expect(typeof (flow as any).parallel).toBe('function');
+    expect(typeof flow.series).toBe('function');
+    expect(typeof flow.waterfall).toBe('function');
+    expect(typeof flow.parallel).toBe('function');
   });
 
   it('.series() should run its tasks serially', async () => {
     const tasks = generateNumbersTasks(1, 5);
-    const testFlow = (flow as any).series(tasks);
+    const testFlow = flow.series(tasks);
     const expectedResults = range(1, 5);
 
     const { results: actualResults, errors } = await testFlow.run();
@@ -55,7 +54,7 @@ describe('Flow', () => {
 
   it('.waterfall() should run its tasks serially but pass previous result', async () => {
     const tasks = generateNumbersTasks(1, 5);
-    const testFlow = (flow as any).waterfall(tasks);
+    const testFlow = flow.waterfall(tasks);
     const expectedResults = 5;
 
     const { results: actualResults, errors } = await testFlow.run();
@@ -73,7 +72,7 @@ describe('Flow', () => {
 
   it('.parallel() should run its tasks concurrently', async () => {
     const tasks = generateNumbersTasks(1, 5);
-    const testFlow = (flow as any).parallel(tasks);
+    const testFlow = flow.parallel(tasks);
     const expectedResults = range(1, 5);
 
     const { results: actualResults, errors } = await testFlow.run();
@@ -85,9 +84,9 @@ describe('Flow', () => {
   it('.waterfall() should return only the last result', async () => {
     const oneToFiveTasks = generateNumbersTasks(1, 5);
     const sixToTenTasks = generateNumbersTasks(6, 10);
-    const testFlow = (flow as any).waterfall([
-      (flow as any).parallel(oneToFiveTasks),
-      (flow as any).parallel(sixToTenTasks)
+    const testFlow = flow.waterfall([
+      flow.parallel(oneToFiveTasks),
+      flow.parallel(sixToTenTasks)
     ]);
     const expectedResults = range(6, 10);
 
@@ -98,9 +97,9 @@ describe('Flow', () => {
   });
 
   it('any flow instance should allow to pipe additional flows', async () => {
-    const oneToFiveFlow = (flow as any).parallel(generateNumbersTasks(1, 5));
-    const sixToTenFlow = (flow as any).parallel(generateNumbersTasks(6, 10));
-    const elevenToFifteenFlow = (flow as any).parallel(generateNumbersTasks(11, 15));
+    const oneToFiveFlow = flow.parallel(generateNumbersTasks(1, 5));
+    const sixToTenFlow = flow.parallel(generateNumbersTasks(6, 10));
+    const elevenToFifteenFlow = flow.parallel(generateNumbersTasks(11, 15));
     const testFlow = oneToFiveFlow
       .pipe(sixToTenFlow)
       .pipe(elevenToFifteenFlow);
@@ -114,9 +113,9 @@ describe('Flow', () => {
   });
 
   it('any flow instance should allow to un-pipe a flow or all ones', async () => {
-    const oneToFiveFlow = (flow as any).parallel(generateNumbersTasks(1, 5));
-    const sixToTenFlow = (flow as any).parallel(generateNumbersTasks(6, 10));
-    const elevenToFifteenFlow = (flow as any).parallel(generateNumbersTasks(11, 15));
+    const oneToFiveFlow = flow.parallel(generateNumbersTasks(1, 5));
+    const sixToTenFlow = flow.parallel(generateNumbersTasks(6, 10));
+    const elevenToFifteenFlow = flow.parallel(generateNumbersTasks(11, 15));
     const testFlow = oneToFiveFlow
       .pipe(sixToTenFlow)
       .pipe(elevenToFifteenFlow);
@@ -134,9 +133,9 @@ describe('Flow', () => {
   });
 
   it('when a flow is provided as task it should be converted to task', async () => {
-    const testFlow = (flow as any).parallel([
-      (flow as any).parallel(generateNumbersTasks(1, 5)),
-      (flow as any).parallel(generateNumbersTasks(6, 10))
+    const testFlow = flow.parallel([
+      flow.parallel(generateNumbersTasks(1, 5)),
+      flow.parallel(generateNumbersTasks(6, 10))
     ]);
     const expectedResults = [range(1, 5), range(6, 10)];
 
@@ -147,10 +146,10 @@ describe('Flow', () => {
 
   it('tasks can be passed as an object', async () => {
     const tasks = {
-      oneToFive: (flow as any).parallel(generateNumbersTasks(1, 5)),
-      sixToTen: (flow as any).parallel(generateNumbersTasks(6, 10))
+      oneToFive: flow.parallel(generateNumbersTasks(1, 5)),
+      sixToTen: flow.parallel(generateNumbersTasks(6, 10))
     };
-    const testFlow = (flow as any).parallel(tasks, { resultsAsArray: false });
+    const testFlow = flow.parallel(tasks, { resultsAsArray: false });
     const expectedResults = {
       oneToFive: range(1, 5),
       sixToTen: range(6, 10)
@@ -163,10 +162,10 @@ describe('Flow', () => {
 
   it('should return results as array when passed resultsAsArray=true option', async () => {
     const tasks = {
-      oneToFive: (flow as any).parallel(generateNumbersTasks(1, 5)),
-      sixToTen: (flow as any).parallel(generateNumbersTasks(6, 10))
+      oneToFive: flow.parallel(generateNumbersTasks(1, 5)),
+      sixToTen: flow.parallel(generateNumbersTasks(6, 10))
     };
-    const testFlow = (flow as any).parallel(tasks, { resultsAsArray: true });
+    const testFlow = flow.parallel(tasks, { resultsAsArray: true });
     const expectedResults = [range(1, 5), range(6, 10)];
 
     const { results: actualResults } = await testFlow.run();
@@ -180,7 +179,7 @@ describe('Flow', () => {
       sinon.stub().returns(Promise.reject(new Error('something went wrong'))),
       sinon.stub().returns(3)
     ];
-    const testFlow = (flow as any).parallel(tasks, { abortOnError: true, name: 'test-flow' });
+    const testFlow = flow.parallel(tasks, { abortOnError: true, name: 'test-flow' });
     const expectedErrorMsg = 'task "1" in flow{test-flow}:parallel has failed: something went wrong';
 
     try {
@@ -200,7 +199,7 @@ describe('Flow', () => {
       sinon.stub().returns(Promise.reject(new Error('something went wrong on task 2'))),
       sinon.stub().returns(4)
     ];
-    const testFlow = (flow as any).parallel(tasks, { abortOnError: false, name: 'test-flow' });
+    const testFlow = flow.parallel(tasks, { abortOnError: false, name: 'test-flow' });
     const expectedResults = [1, undefined, undefined, 4];
 
     const { results: actualResults, errors } = await testFlow.run();
@@ -218,7 +217,7 @@ describe('Flow', () => {
       sinon.stub().returns(Promise.reject(new Error('something went wrong on task 2'))),
       sinon.stub().returns(4)
     ];
-    const testFlow = (flow as any).series(tasks, { abortOnError: false, name: 'test-flow' });
+    const testFlow = flow.series(tasks, { abortOnError: false, name: 'test-flow' });
     const expectedResults = [1, undefined, undefined, 4];
 
     const { results: actualResults, errors } = await testFlow.run();
@@ -236,7 +235,7 @@ describe('Flow', () => {
       sinon.stub().returns(Promise.reject(new Error('something went wrong on task 2'))),
       sinon.stub().returns(4)
     ];
-    const testFlow = (flow as any).waterfall(tasks, { abortOnError: false, name: 'test-flow' });
+    const testFlow = flow.waterfall(tasks, { abortOnError: false, name: 'test-flow' });
     const expectedResults = 4;
 
     const { results: actualResults, errors } = await testFlow.run();
@@ -253,7 +252,7 @@ describe('Flow', () => {
       sinon.stub().returns(Promise.reject(new Error('something went wrong'))),
       sinon.stub().returns(3)
     ];
-    const testFlow = (flow as any).series(tasks, { abortOnError: true, name: 'test-flow' });
+    const testFlow = flow.series(tasks, { abortOnError: true, name: 'test-flow' });
     const expectedErrorMsg = 'task "1" in flow{test-flow}:series has failed: something went wrong';
 
     try {
@@ -272,7 +271,7 @@ describe('Flow', () => {
       sinon.stub().returns(Promise.reject(new Error('something went wrong'))),
       sinon.stub().returns(3)
     ];
-    const testFlow = (flow as any).waterfall(tasks, { abortOnError: true, name: 'test-flow' });
+    const testFlow = flow.waterfall(tasks, { abortOnError: true, name: 'test-flow' });
     const expectedErrorMsg = 'task "1" in flow{test-flow}:waterfall has failed: something went wrong';
 
     try {
@@ -287,12 +286,12 @@ describe('Flow', () => {
 
   it('.waterfall() should extract the last result when last task is a flow with only one task', async () => {
     const tasks = [
-      (flow as any).parallel(generateNumbersTasks(1, 5)),
-      (flow as any).parallel([
+      flow.parallel(generateNumbersTasks(1, 5)),
+      flow.parallel([
         () => range(6, 10)
       ])
     ];
-    const testFlow = (flow as any).waterfall(tasks, { resultsAsArray: true });
+    const testFlow = flow.waterfall(tasks, { resultsAsArray: true });
     const expectedResults = range(6, 10);
 
     const { results: actualResults } = await testFlow.run();
@@ -302,13 +301,13 @@ describe('Flow', () => {
 
   it('.waterfall() should not extract the last result when last task is a flow with multiple tasks', async () => {
     const tasks = [
-      (flow as any).parallel(generateNumbersTasks(1, 5)),
-      (flow as any).parallel([
+      flow.parallel(generateNumbersTasks(1, 5)),
+      flow.parallel([
         () => range(6, 10),
         () => range(11, 15)
       ])
     ];
-    const testFlow = (flow as any).waterfall(tasks, { resultsAsArray: true });
+    const testFlow = flow.waterfall(tasks, { resultsAsArray: true });
     const expectedResults = [range(6, 10), range(11, 15)];
 
     const { results: actualResults } = await testFlow.run();

@@ -32,6 +32,7 @@
   ],
   "main": "dist/index.js",
   "scripts": {
+    "lint": "eslint . --ext .ts",
     "build": "rm -rf dist && tsc",
     "prepublishOnly": "npm run build",
     "test": "vitest",
